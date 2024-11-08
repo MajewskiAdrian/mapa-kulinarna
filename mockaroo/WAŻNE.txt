@@ -1,0 +1,2 @@
+Ogólnie sam program jest przydatny, jednak nie w naszym projekcie. Jest strasznie dużo duplikatów i nie wszystko zostało przetłumaczone. 
+Tę bazę potraktujemy jako ćwiczenie/test programu i nie użyjemy jej w naszym projekcie.
