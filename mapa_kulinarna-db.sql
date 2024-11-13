@@ -79,14 +79,14 @@ INSERT INTO `dania` (`id`, `nazwa_dania`, `opis`, `wegetarianskie`, `kuchnia`) V
 
 CREATE TABLE `dania_skladniki` (
   `id_dania` int(11) NOT NULL,
-  `id_skladniki` int(11) NOT NULL
+  `id_skladnika` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `dania_skladniki`
 --
 
-INSERT INTO `dania_skladniki` (`id_dania`, `id_skladniki`) VALUES
+INSERT INTO `dania_skladniki` (`id_dania`, `id_skladnika`) VALUES
 (1, 1),
 (2, 1),
 (3, 1),
@@ -321,7 +321,7 @@ INSERT INTO `restauracje` (`id`, `nazwa_restauracji`, `panstwo`, `miasto`, `ulic
 --
 
 CREATE TABLE `restauracje_dania` (
-  `id_restauracja` int(11) NOT NULL,
+  `id_restauracji` int(11) NOT NULL,
   `id_dania` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -329,7 +329,7 @@ CREATE TABLE `restauracje_dania` (
 -- Dumping data for table `restauracje_dania`
 --
 
-INSERT INTO `restauracje_dania` (`id_restauracja`, `id_dania`) VALUES
+INSERT INTO `restauracje_dania` (`id_restauracji`, `id_dania`) VALUES
 (1, 1),
 (1, 4),
 (1, 5),
@@ -477,7 +477,7 @@ ALTER TABLE `dania`
 -- Indeksy dla tabeli `dania_skladniki`
 --
 ALTER TABLE `dania_skladniki`
-  ADD PRIMARY KEY (`id_skladniki`,`id_dania`),
+  ADD PRIMARY KEY (`id_skladnika`,`id_dania`),
   ADD KEY `id_dania` (`id_dania`);
 
 --
@@ -490,7 +490,7 @@ ALTER TABLE `restauracje`
 -- Indeksy dla tabeli `restauracje_dania`
 --
 ALTER TABLE `restauracje_dania`
-  ADD PRIMARY KEY (`id_restauracja`,`id_dania`),
+  ADD PRIMARY KEY (`id_restauracji`,`id_dania`),
   ADD KEY `id_dania` (`id_dania`);
 
 --
@@ -529,14 +529,14 @@ ALTER TABLE `skladniki`
 -- Constraints for table `dania_skladniki`
 --
 ALTER TABLE `dania_skladniki`
-  ADD CONSTRAINT `dania_skladniki_ibfk_1` FOREIGN KEY (`id_skladniki`) REFERENCES `skladniki` (`id`),
+  ADD CONSTRAINT `dania_skladniki_ibfk_1` FOREIGN KEY (`id_skladnika`) REFERENCES `skladniki` (`id`),
   ADD CONSTRAINT `dania_skladniki_ibfk_2` FOREIGN KEY (`id_dania`) REFERENCES `dania` (`id`);
 
 --
 -- Constraints for table `restauracje_dania`
 --
 ALTER TABLE `restauracje_dania`
-  ADD CONSTRAINT `restauracje_dania_ibfk_1` FOREIGN KEY (`id_restauracja`) REFERENCES `restauracje` (`id`),
+  ADD CONSTRAINT `restauracje_dania_ibfk_1` FOREIGN KEY (`id_restauracji`) REFERENCES `restauracje` (`id`),
   ADD CONSTRAINT `restauracje_dania_ibfk_2` FOREIGN KEY (`id_dania`) REFERENCES `dania` (`id`);
 COMMIT;
 
