@@ -1,0 +1,101 @@
+CREATE VIEW liczba_skladnikow_w_daniu AS
+SELECT 
+    d.nazwa_dania,
+    COUNT(ds.id_skladnika) AS liczba_skladnikow
+FROM 
+    dania d
+JOIN 
+    dania_skladniki ds ON d.id = ds.id_dania
+GROUP BY 
+    d.id, d.nazwa_dania;
+
+
+CREATE VIEW liczba_wystapien_skladnikow AS
+SELECT 
+    s.nazwa_skladnika,
+    COUNT(ds.id_skladnika) AS ilosc_wystapien
+FROM 
+    skladniki s
+JOIN 
+    dania_skladniki ds ON s.id = ds.id_skladnika
+GROUP BY 
+    s.id, s.nazwa_skladnika  
+ORDER BY 
+    ilosc_wystapien DESC;
+
+
+CREATE VIEW dania_z_pomidorem AS
+SELECT 
+    d.nazwa_dania
+FROM 
+    skladniki s
+JOIN 
+    dania_skladniki ds ON s.id = ds.id_skladnika
+JOIN 
+    dania d ON d.id = ds.id_dania
+WHERE 
+    s.nazwa_skladnika = "pomidor";
+
+
+CREATE VIEW restauracje_z_daniami_z_pomidorem AS
+SELECT 
+    r.nazwa_restauracji,
+    d.nazwa_dania
+FROM 
+    restauracje r
+JOIN
+    restauracje_dania rd ON r.id = rd.id_restauracji
+JOIN 
+    dania_skladniki ds ON rd.id_dania = ds.id_dania
+JOIN
+    skladniki s ON s.id = ds.id_skladnika
+JOIN 
+    dania d ON d.id = ds.id_dania
+WHERE 
+    s.nazwa_skladnika = "pomidor";
+
+CREATE VIEW potrawy_wegetarianskie AS 
+SELECT /* wybiera dwie kolumny*/
+    r.nazwa_restauracji as restauracja, 
+    d.nazwa_dania
+FROM 
+    restauracje r
+INNER JOIN 
+    restauracje_dania rd ON r.id = rd.id_restauracji
+INNER JOIN 
+    dania d ON rd.id_dania = d.id
+WHERE /*sprawdza, czy w kolumnie wegetarianskie jest zaznaczona wartość TRUE, czy FALSE (1/0)*/
+    d.wegetarianskie = 1;
+
+
+
+
+
+CREATE VIEW najczestsze_skladniki AS
+WITH temp AS ( /*WITH tworzy tymczasową tabelkę*/
+    SELECT 
+        r.id,
+    r.nazwa_restauracji, 
+        s.nazwa_skladnika, 
+        COUNT(s.id) AS liczba_wystapien,/*liczy ilość wystąpień id składników*/
+        ROW_NUMBER() OVER (PARTITION BY r.nazwa_restauracji ORDER BY COUNT(s.id) DESC) AS ranking/*ROW_NUMBER() numeruje wiersze,
+    OVER (pokazuje na co działa funkcja ROW_NUMBER()), PARTITION BY dzieli na grupy według nazwy restauracji
+    Ta cała linijka tworzy osobny ranking ilości występowanych składników dla każdej restauracji*/
+    FROM restauracje r
+    INNER JOIN 
+        restauracje_dania rd ON r.id = rd.id_restauracji
+    INNER JOIN 
+        dania_skladniki ds ON rd.id_dania = ds.id_dania
+    INNER JOIN 
+        skladniki s ON ds.id_skladnika = s.id
+    GROUP BY 
+        r.nazwa_restauracji, s.nazwa_skladnika
+)
+SELECT /* wybieramy co chcemy wyświetlic*/
+    nazwa_restauracji as restauracja, 
+    nazwa_skladnika, 
+    liczba_wystapien
+FROM temp /*Odnosi się do tymczasowej tabeli, którą stworzyłem na początku*/
+WHERE ranking = 1 /*wybiera składniki, które mają przypisane numer 1 w rankingu(były wykorzystane największą ilość razy*/
+ORDER BY 
+    id;
