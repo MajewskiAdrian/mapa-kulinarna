@@ -72,7 +72,7 @@ require_once '../includes/db_conn.php';
             // WYŚWIETLANIE TABEL
             if (isset($_POST['tableName'])) {
 
-                $collumnNumber = 0;
+                $columnNumber = 0;
 
                 $tableName = $_POST['tableName'];
                 $_SESSION["tableName"] = $tableName;
@@ -102,9 +102,9 @@ require_once '../includes/db_conn.php';
 
                     $nazwyKolumn[] = $nazwaKolumny;
 
-                    $collumnNumber++;
+                    $columnNumber++;
                 }
-                $_SESSION["ColumnNames"] = $nazwyKolumn;
+                $_SESSION["columnNames"] = $nazwyKolumn;
                 echo "<th> Edytuj </th>";
                 echo "<th> Usuń </th>";
                 echo "</tr>";
@@ -161,16 +161,16 @@ require_once '../includes/db_conn.php';
 
                 if ($tableName == 'restauracje_dania' || $tableName == 'dania_skladniki') {
                     echo '<form action="" method="post">';
-                    $_SESSION['colNum'] = $collumnNumber;
-                    for ($i = 0; $i < $collumnNumber; $i++) {
+                    $_SESSION['colNum'] = $columnNumber;
+                    for ($i = 0; $i < $columnNumber; $i++) {
                         echo '<td><input type="text" name="wartosc[]"></td>';
                     }
                     echo "<td colspan='2'><button type='submit' name='add-laczaca'>add</button></td>";
 
                 } else {
                     echo '<form action="" method="post">';
-                    $_SESSION['colNum'] = $collumnNumber;
-                    for ($i = 1; $i < $collumnNumber; $i++) {
+                    $_SESSION['colNum'] = $columnNumber;
+                    for ($i = 1; $i < $columnNumber; $i++) {
                         if ($i == 1) {
                             echo '<td>' . ($result->num_rows + 1) . '</td>';
                         }
