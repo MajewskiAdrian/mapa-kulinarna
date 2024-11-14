@@ -168,9 +168,14 @@ require_once '../includes/db_conn.php';
                 } else {
                     echo '<form action="" method="post">';
                     $_SESSION['colNum'] = $columnNumber;
+                    $_SESSION["columnNames"] = $nazwyKolumn;
+                    $rowNumber = $result->num_rows;
+                    $nazwaKolumnyID = $nazwyKolumn[0];
+                    $nextID = ($tableValues[$rowNumber-1][$nazwaKolumnyID]) + 1;
+                   
                     for ($i = 1; $i < $columnNumber; $i++) {
                         if ($i == 1) {
-                            echo '<td>' . ($result->num_rows + 1) . '</td>';
+                            echo '<td>' . $nextID . '</td>';
                         }
                         echo '<td><input type="text" name="wartosc[]"></td>';
                     }
