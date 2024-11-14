@@ -84,7 +84,6 @@ p {
     margin-right: auto;
 }
 
-
 .panel-header {
     margin: 2rem;
     width: 100%;
@@ -98,6 +97,7 @@ p {
     border-collapse: collapse;
     text-align: left;
 }
+
 th {
     border: 1px solid #696969;
     background-color: #5c5c5c;
