@@ -49,7 +49,7 @@ require_once '../includes/db_conn.php';
                 if ($i == 0) {
                     echo '<td>' . $id . '</td>';
                 } else {
-                    echo "<td><input type='text' value='" . $dane[$i] . "' name='wartosciRekordu[]'></td>";
+                    echo "<td><input type='text' value='" . $dane[$i] . "' name='wartosciRekordu[]' required></td>";
                 }
                 
             }
@@ -98,8 +98,8 @@ require_once '../includes/db_conn.php';
             echo '<form action="" method="POST">';
             echo '<tr>';
             
-            echo "<td><input type='number' value='" . $columnValue1 . "' name='wartosciRekordu[]'></td>";
-            echo "<td><input type='number' value='" . $columnValue2 . "' name='wartosciRekordu[]'></td>";
+            echo "<td><input type='number' value='" . $columnValue1 . "' name='wartosciRekordu[]' required></td>";
+            echo "<td><input type='number' value='" . $columnValue2 . "' name='wartosciRekordu[]' required></td>";
             
 
             echo '</tr>';

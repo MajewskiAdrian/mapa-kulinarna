@@ -161,7 +161,7 @@ require_once '../includes/db_conn.php';
                     echo '<form action="" method="post">';
                     $_SESSION['colNum'] = $columnNumber;
                     for ($i = 0; $i < $columnNumber; $i++) {
-                        echo '<td><input type="text" name="wartosc[]"></td>';
+                        echo '<td><input type="text" name="wartosc[]" required></td>';
                     }
                     echo "<td colspan='2'><button type='submit' name='add-laczaca'>add</button></td>";
 
@@ -177,7 +177,7 @@ require_once '../includes/db_conn.php';
                         if ($i == 1) {
                             echo '<td>' . $nextID . '</td>';
                         }
-                        echo '<td><input type="text" name="wartosc[]"></td>';
+                        echo '<td><input type="text" name="wartosc[]" required></td>';
                     }
                     echo "<td colspan='2'><button type='submit' name='add'>add</button></td>";
                 }
