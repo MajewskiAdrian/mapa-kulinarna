@@ -104,10 +104,15 @@ require_once '../includes/db_conn.php';
                 foreach ($tableValues as $wiersz) {
                     echo "<tr>";
                     foreach ($wiersz as $komorka) {
+
                         echo "<td>" . $komorka . "</td>";
                     }
                     echo "<td> <button type='submit'> edit </button> </td>";
-                    echo "<td> <button type='submit'> delete </button> </td>";
+
+                    
+                echo '<form action="" method="post">';
+                    echo "<td> <button type='submit' name> delete </button> </td>";
+                echo '</form>';
                     echo "</tr>";
                 }
 
