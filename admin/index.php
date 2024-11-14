@@ -92,34 +92,76 @@ require_once '../includes/db_conn.php';
                 echo '<table class="tabela-wyniki">';
                 echo '<tr>';
 
+                ///////////////////////////////////////////////////
+                
+                $nazwyKolumn = [];
+
                 foreach (array_keys($tableValues[0]) as $nazwaKolumny) {
                     echo "<th>" . $nazwaKolumny . "</th>";
+    
+                    // Dodawanie nazwy kolumny do tablicy
+                     $nazwyKolumn[] = $nazwaKolumny;
+
                     $collumnNumber++;
                 }
-
+                $_SESSION["ColumnNames"] = $nazwyKolumn;
                 echo "<th> Edytuj </th>";
                 echo "<th> Usuń </th>";
                 echo "</tr>";
-
+                ///////////////////////////////////////////////////////
                 foreach ($tableValues as $wiersz) {
                     echo "<tr>";
                     foreach ($wiersz as $komorka) {
 
                         echo "<td>" . $komorka . "</td>";
+                        $wartoscKomorki[] = $komorka;
                     }
-                    echo "<td> <button type='submit'> edit </button> </td>";
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        if($tableName=='restauracje_dania' || $tableName=='dania_skladniki')
+        {
+            echo '<form action="edit.php" method="post">';
+            echo '<input type="hidden" value="' . $wartoscKomorki[0] . '" name="id_1">';
+            echo '<input type="hidden" value="' . $wartoscKomorki[1] . '" name="id_2">';
+            echo '<input type="hidden" value="' . $nazwyKolumn[0] . '" name="nazwa1">';
+            echo '<input type="hidden" value="' . $nazwyKolumn[1] . '" name="nazwa2">';
+            echo "<td> <button type='submit' name='edit-relacyjna'> editttt </button> </td>";
+            echo '</form>';
 
-                    
+        }else
+        {
+            echo '<form action="edit.php" method="post">';
+            echo '<input type="hidden" value="' . $wartoscKomorki[0] . '" name="id">';
+            echo "<td> <button type='submit' name='edit'> edit </button> </td>";
+            echo '</form>';
+            
+        }
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                if($tableName=='restauracje_dania' || $tableName=='dania_skladniki')
+                {
                 echo '<form action="" method="post">';
-                    echo "<td> <button type='submit' name> delete </button> </td>";
+                    echo '<input type="hidden" value="' . $wartoscKomorki[0] . '" name="id_1">';
+                    echo '<input type="hidden" value="' . $wartoscKomorki[1] . '" name="id_2">';
+                    echo '<input type="hidden" value="' . $nazwyKolumn[0] . '" name="nazwa1">';
+                    echo '<input type="hidden" value="' . $nazwyKolumn[1] . '" name="nazwa2">';
+                    echo "<td> <button type='submit' name='delete-relacyjna'> deleteeee </button> </td>";
+                echo '</form>';
+                    echo "</tr>";
+                }else
+                {
+                    echo '<form action="" method="post">';
+                    echo '<input type="hidden" value="' . $wartoscKomorki[0] . '" name="id">';
+                    echo "<td> <button type='submit' name='delete'> delete </button> </td>";
                 echo '</form>';
                     echo "</tr>";
                 }
-
+                unset($wartoscKomorki);
+            }
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 echo '<tr>';
-
                 echo '<form action="" method="post">';
-
+                $_SESSION['colNum'] = $collumnNumber;
                 for ($i = 1; $i < $collumnNumber; $i++) {
                     if ($i == 1) {
                         echo '<td>' . ($result->num_rows + 1) . '</td>';
@@ -129,14 +171,11 @@ require_once '../includes/db_conn.php';
                 echo "<td colspan='2'><button type='submit' name='add'>add</button></td>";
 
                 echo '</form>';
-
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 echo '</tr>';
                 echo '</table>';
                 
             }
-
-
-
             // WYŚWIELANIE WIDOKÓW
             
 
@@ -180,7 +219,7 @@ require_once '../includes/db_conn.php';
                 echo '</table>';
             }
 
-
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
             if (isset($_POST['add'])) {
                 
                 $wartosci = $_POST['wartosc'];
@@ -190,6 +229,34 @@ require_once '../includes/db_conn.php';
                 echo $sql;
 
             }
+
+
+            
+            if (isset($_POST['delete-relacyjna'])) {
+                
+                $wart1 = $_POST['id_1'];
+                $wart2 = $_POST['id_2'];
+                $nazwaKol1=$_POST['nazwa1'];
+                $nazwaKol2=$_POST['nazwa2'];
+                
+                $sql = "DELETE FROM ". $_SESSION["tableName"] ." WHERE $nazwaKol1=$wart1 AND $nazwaKol2=$wart2;";
+                //$sql = "INSERT INTO " . $_SESSION["tableName"] . " VALUES (NULL, '" . implode("', '", $wartosci) . "');";
+                $conn->query($sql);
+                echo $sql;
+
+            }
+
+            if (isset($_POST['delete'])) {
+                
+                $wart = $_POST['id'];
+
+                $sql = "DELETE FROM ". $_SESSION["tableName"] ." WHERE id=$wart;";
+                $conn->query($sql);
+                echo $sql;
+            }
+            
+
+
             ?>
         </section>
     </div>
