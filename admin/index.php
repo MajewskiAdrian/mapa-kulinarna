@@ -122,8 +122,6 @@ require_once '../includes/db_conn.php';
                         echo '<form action="edit.php" method="post">';
                         echo '<input type="hidden" value="' . $wartoscKomorki[0] . '" name="id_1">';
                         echo '<input type="hidden" value="' . $wartoscKomorki[1] . '" name="id_2">';
-                        echo '<input type="hidden" value="' . $nazwyKolumn[0] . '" name="nazwa1">';
-                        echo '<input type="hidden" value="' . $nazwyKolumn[1] . '" name="nazwa2">';
                         echo "<td> <button type='submit' name='edit-laczaca'> edit </button> </td>";
                         echo '</form>';
 

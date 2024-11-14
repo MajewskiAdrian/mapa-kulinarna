@@ -16,26 +16,7 @@ require_once '../includes/db_conn.php';
     <div class="edytowanie">
         <?php
 
-
-
-
-        if (isset($_POST['edit-laczaca'])) {
-
-            $wart1 = $_POST['id_1'];
-            $wart2 = $_POST['id_2'];
-            $nazwaKol1 = $_POST['nazwa1'];
-            $nazwaKol2 = $_POST['nazwa2'];
-
-            //$sql = "DELETE FROM " . $_SESSION["tableName"] . " WHERE $nazwaKol1=$wart1 AND $nazwaKol2=$wart2;";
-            //$conn->query($sql);
-            echo $sql;
-
-            // Reszta funkcjonalności (jeszcze nie ma)
-        
-        }
-
-
-
+        // WYŚWIETLENIE EDYTOWANEGO REKORDU
         if (isset($_POST['edit'])) {
 
             $id = $_POST['id'];
@@ -79,6 +60,7 @@ require_once '../includes/db_conn.php';
             echo '</form>';
         }
 
+        // FUNKCJA EDYTUJĄCA REKORD
         if (isset($_POST['update'])) {
 
             $id = $_SESSION["idRekordu"];
@@ -93,6 +75,55 @@ require_once '../includes/db_conn.php';
             $sqlSet = rtrim($sqlSet, ", ");
   
             $sql = "UPDATE " . $_SESSION["tableName"] . " SET " . $sqlSet . " WHERE id = " . $id . ";";
+            $conn->query($sql);
+            echo $sql;
+        }
+
+        // WYŚWIETLENIE EDYTOWANEGO REKORDU - jeżeli tabela łącząca
+        if (isset($_POST['edit-laczaca'])) {
+
+            $columnValue1 = $_POST['id_1'];
+            $columnValue2 = $_POST['id_2'];
+
+            echo "<table class='tabela-wyniki'>";
+
+            $columnNumber = $_SESSION['colNum'];
+
+            foreach ($_SESSION['columnNames'] as $kolumna) {
+                echo "<th>$kolumna</th>";
+            }
+            $sqlWhere = "";
+            $sqlWhere .= $_SESSION['columnNames'][0] . " = '" . $columnValue1 . "' AND " . $_SESSION['columnNames'][1] . " = '" . $columnValue2 . "'";
+
+            echo '<form action="" method="POST">';
+            echo '<tr>';
+            
+            echo "<td><input type='number' value='" . $columnValue1 . "' name='wartosciRekordu[]'></td>";
+            echo "<td><input type='number' value='" . $columnValue2 . "' name='wartosciRekordu[]'></td>";
+            
+
+            echo '</tr>';
+            echo "</table>";
+            echo '<input type="hidden" value="' . $sqlWhere . '" name="sqlWhere">';
+            echo '<button type="submit" name="update-laczaca"> update </button>';
+            echo '</form>';        
+        }
+
+        // FUNKCJA EDYTUJĄCA REKORD - jeżeli tabela łącząca
+        if (isset($_POST['update-laczaca'])) {
+
+            $sqlWhere = $_POST['sqlWhere'];
+
+            $wartosciRekordu = $_POST['wartosciRekordu'];
+            $columnNumber = $_SESSION['colNum'];
+            $sqlSet = "";
+            for ($i = 0; $i < $columnNumber; $i++) {
+                $sqlSet .= $_SESSION['columnNames'][$i] . " = '" . $wartosciRekordu[$i] . "', ";
+            }
+        
+            $sqlSet = rtrim($sqlSet, ", ");
+
+            $sql = "UPDATE " . $_SESSION["tableName"] . " SET " . $sqlSet . " WHERE " . $sqlWhere . ";";
             $conn->query($sql);
             echo $sql;
         }
