@@ -17,7 +17,7 @@ require_once '../includes/db_conn.php';
 
 
 
-if (isset($_POST['edit-relacyjna'])) {
+if (isset($_POST['edit-laczaca'])) {
                 
     $wart1 = $_POST['id_1'];
     $wart2 = $_POST['id_2'];
@@ -69,13 +69,13 @@ if (isset($_POST['edit'])) {
     echo '<form action="" method="POST">';
     echo '<tr>';
 
-    //$collumnNumber = $_SESSION['colNum'];
-    //for ($i = 1; $i < $collumnNumber; $i++) {
-    //    if ($i == 1) {
-    //        echo '<td>' . ($result->num_rows + 1) . '</td>';
-    //    }
-    //    echo "<td><input type='text' value='" . $dane[$i] . "' name='wartosci[]'></td>";
-    //}
+    /*$collumnNumber = $_SESSION['colNum'];
+    for ($i = 1; $i < $collumnNumber; $i++) {
+        if ($i == 1) {
+            echo '<td>' . ($result->num_rows + 1) . '</td>';
+        }
+        echo "<td><input type='text' value='" . $dane[$i] . "' name='wartosci[]'></td>";
+    }*/
 
 
     foreach ($dane as $dana) {
