@@ -28,17 +28,26 @@ require_once '../includes/db_conn.php';
                 echo "<th>$kolumna</th>";
             }
 
-            $sql = "SELECT " . implode(", ", $_SESSION['columnNames']) . " FROM " . $_SESSION["tableName"] . " WHERE id = $id;";
-            $result = $conn->query($sql);
-        
-            if ($result->num_rows > 0) {
-                $dane = [];
-                while ($row = $result->fetch_row()) {
-                    $dane = $row;
+            try {
+                $sql = "SELECT " . implode(", ", $_SESSION['columnNames']) . " FROM " . $_SESSION["tableName"] . " WHERE id = $id;";
+                $result = $conn->query($sql);
+            
+                if ($result->num_rows > 0) {
+                    $dane = [];
+                    while ($row = $result->fetch_row()) {
+                        $dane = $row;
+                    }
+                } else {
+                    echo "Brak danych.";
                 }
-            } else {
-                echo "Brak danych.";
             }
+            catch (mysqli_sql_exception $e) {
+                echo '<div class="error-container">';
+                echo "Błąd podczas wykonywania zapytania:<br> " . $e->getMessage();
+                echo '</div>';
+                echo '<a href="index.php" class="button-tabele"> Powrót </a>';
+            }
+            
 
             echo '<form action="" method="POST">';
             echo '<tr>';
@@ -56,7 +65,7 @@ require_once '../includes/db_conn.php';
 
             echo '</tr>';
             echo "</table>";
-            echo '<button type="submit" name="update"> update </button>';
+            echo '<button type="submit" class="button-back" name="update"> update </button>';
             echo '</form>';
         }
 
@@ -73,10 +82,23 @@ require_once '../includes/db_conn.php';
             }
         
             $sqlSet = rtrim($sqlSet, ", ");
-  
-            $sql = "UPDATE " . $_SESSION["tableName"] . " SET " . $sqlSet . " WHERE id = " . $id . ";";
-            $conn->query($sql);
-            echo $sql;
+            
+            try {
+                $sql = "UPDATE " . $_SESSION["tableName"] . " SET " . $sqlSet . " WHERE id = " . $id . ";";
+                $conn->query($sql);
+                echo '<div class="success-container">';
+                echo "Zapytanie: " . $sql . " <br> zostało wykonane pomyślnie. <br>";
+                echo "Rekord został edytowany";
+                echo '</div>';
+                echo '<a href="index.php" class="button-back"> Powrót </a>';
+            }
+            catch (mysqli_sql_exception $e) {
+                echo '<div class="error-container">';
+                echo "Błąd podczas wykonywania zapytania:<br> " . $e->getMessage();
+                echo '</div>';
+                echo '<a href="index.php" class="button-back"> Powrót </a>';
+            }
+            
         }
 
         // WYŚWIETLENIE EDYTOWANEGO REKORDU - jeżeli tabela łącząca
@@ -105,7 +127,7 @@ require_once '../includes/db_conn.php';
             echo '</tr>';
             echo "</table>";
             echo '<input type="hidden" value="' . $sqlWhere . '" name="sqlWhere">';
-            echo '<button type="submit" name="update-laczaca"> update </button>';
+            echo '<button type="submit" class="button-back" name="update-laczaca"> update </button>';
             echo '</form>';        
         }
 
@@ -123,9 +145,25 @@ require_once '../includes/db_conn.php';
         
             $sqlSet = rtrim($sqlSet, ", ");
 
-            $sql = "UPDATE " . $_SESSION["tableName"] . " SET " . $sqlSet . " WHERE " . $sqlWhere . ";";
-            $conn->query($sql);
-            echo $sql;
+            try {
+                $sql = "UPDATE " . $_SESSION["tableName"] . " SET " . $sqlSet . " WHERE " . $sqlWhere . ";";
+                $conn->query($sql);
+                echo '<div class="success-container">';
+                echo "Zapytanie: " . $sql . " <br> zostało wykonane pomyślnie. <br>";
+                echo "Rekord został edytowany";
+                echo '</div>';
+                
+                echo '<a href="index.php" class="button-back"> Powrót </a>';
+                exit();
+            }
+            catch (mysqli_sql_exception $e) {
+                echo '<div class="error-container">';
+                echo "Błąd podczas wykonywania zapytania:<br> " . $e->getMessage();
+                echo '</div>';
+
+                echo '<a href="index.php" class="button-back"> Powrót </a>';
+            }
+            
         }
 
         ?>
