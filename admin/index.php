@@ -32,7 +32,7 @@ require_once '../includes/db_conn.php';
             }
             echo '<form action="" method="post">';
             foreach ($tableNames as $tableName) {
-                echo "<button type='submit' name='tableName' value='$tableName'>";
+                echo "<button class='button-tabele' type='submit' name='tableName' value='$tableName'>";
                 echo "$tableName";
                 echo '</button>';
             }
@@ -57,7 +57,7 @@ require_once '../includes/db_conn.php';
 
             echo '<form action="" method="post">';
             foreach ($viewNames as $viewName) {
-                echo "<button type='submit' name='viewName' value='$viewName'>";
+                echo "<button type='submit' class='button-tabele' name='viewName' value='$viewName'>";
                 echo "$viewName";
                 echo '</button>';
             }
@@ -91,7 +91,6 @@ require_once '../includes/db_conn.php';
                 }
 
                 // Tworzenie tabeli 
-            
                 echo '<table class="tabela-wyniki">';
                 echo '<tr>';
 
@@ -122,13 +121,13 @@ require_once '../includes/db_conn.php';
                         echo '<form action="edit.php" method="post">';
                         echo '<input type="hidden" value="' . $wartoscKomorki[0] . '" name="id_1">';
                         echo '<input type="hidden" value="' . $wartoscKomorki[1] . '" name="id_2">';
-                        echo "<td> <button type='submit' name='edit-laczaca'> edit </button> </td>";
+                        echo "<td class='cell-center-edt'> <button type='submit' class='button-edit' name='edit-laczaca'> <img src='../icons/pen-to-square-regular.svg' class='button-icon' /> </button> </td>";
                         echo '</form>';
 
                     } else {
                         echo '<form action="edit.php" method="post">';
                         echo '<input type="hidden" value="' . $wartoscKomorki[0] . '" name="id">';
-                        echo "<td> <button type='submit' name='edit'> edit </button> </td>";
+                        echo "<td class='cell-center-edt'> <button type='submit' class='button-edit' name='edit'> <img src='../icons/pen-to-square-regular.svg' class='button-icon' /> </button> </td>";
                         echo '</form>';
 
                     }
@@ -141,13 +140,13 @@ require_once '../includes/db_conn.php';
                         echo '<input type="hidden" value="' . $wartoscKomorki[1] . '" name="id_2">';
                         echo '<input type="hidden" value="' . $nazwyKolumn[0] . '" name="nazwa1">';
                         echo '<input type="hidden" value="' . $nazwyKolumn[1] . '" name="nazwa2">';
-                        echo "<td> <button type='submit' name='delete-laczaca'> delete </button> </td>";
+                        echo "<td class='cell-center-del'> <button type='submit' class='button-delete' name='delete-laczaca'> <img src='../icons/trash-outline.svg' class='button-icon' /> </button> </td>";
                         echo '</form>';
                         echo "</tr>";
                     } else {
                         echo '<form action="" method="post">';
                         echo '<input type="hidden" value="' . $wartoscKomorki[0] . '" name="id">';
-                        echo "<td> <button type='submit' name='delete'> delete </button> </td>";
+                        echo "<td class='cell-center-del'> <button type='submit' class='button-delete' name='delete'> <img src='../icons/trash-outline.svg' class='button-icon' /> </button> </td>";
                         echo '</form>';
                         echo "</tr>";
                     }
@@ -161,25 +160,22 @@ require_once '../includes/db_conn.php';
                     echo '<form action="" method="post">';
                     $_SESSION['colNum'] = $columnNumber;
                     for ($i = 0; $i < $columnNumber; $i++) {
-                        echo '<td><input type="text" name="wartosc[]" required></td>';
+                        echo '<td><input class="add-input" type="number" name="wartosc[]" required></td>';
                     }
-                    echo "<td colspan='2'><button type='submit' name='add-laczaca'>add</button></td>";
+                    echo "<td colspan='2'  id='add-scroll' class='cell-center-add'><button type='submit' name='add-laczaca' class='button-add'><img src='../icons/plus-solid.svg' class='button-icon' /></button></td>";
 
                 } else {
                     echo '<form action="" method="post">';
                     $_SESSION['colNum'] = $columnNumber;
                     $_SESSION["columnNames"] = $nazwyKolumn;
-                    $rowNumber = $result->num_rows;
-                    $nazwaKolumnyID = $nazwyKolumn[0];
-                    $nextID = ($tableValues[$rowNumber-1][$nazwaKolumnyID]) + 1;
                    
                     for ($i = 1; $i < $columnNumber; $i++) {
                         if ($i == 1) {
-                            echo '<td>' . $nextID . '</td>';
+                            echo '<td> </td>';
                         }
-                        echo '<td><input type="text" name="wartosc[]" required></td>';
+                        echo '<td><input  class="add-input" type="text" name="wartosc[]" required></td>';
                     }
-                    echo "<td colspan='2'><button type='submit' name='add'>add</button></td>";
+                    echo "<td colspan='2' id='add-scroll' class='cell-center-add'><button type='submit' class='button-add' name='add'><img src='../icons/plus-solid.svg' class='button-icon' /></button></td>";
                 }
 
                 echo '</form>';
@@ -229,20 +225,41 @@ require_once '../includes/db_conn.php';
             if (isset($_POST['add-laczaca'])) {
 
                 $wartosci = $_POST['wartosc'];
+                $tableName = $_SESSION["tableName"];
 
-                $sql = "INSERT INTO " . $_SESSION["tableName"] . " VALUES ('" . implode("', '", $wartosci) . "');";
-                $conn->query($sql);
-                echo $sql;
-
+                try {
+                    $sql = "INSERT INTO " . $_SESSION["tableName"] . " VALUES ('" . implode("', '", $wartosci) . "');";
+                    $conn->query($sql);
+                    echo '<div class="success-container">';
+                    echo "Zapytanie: " . $sql . " <br> zostało wykonane pomyślnie. <br>";
+                    echo "Dodano nowy rekord";
+                    echo '</div>';
+                }    
+                catch (mysqli_sql_exception $e) {
+                    echo '<div class="error-container">';
+                    echo "Błąd podczas wykonywania zapytania:<br> " . $e->getMessage();
+                    echo '</div>';
+                }
             }
 
             if (isset($_POST['add'])) {
 
                 $wartosci = $_POST['wartosc'];
+                $tableName = $_SESSION["tableName"];
 
-                $sql = "INSERT INTO " . $_SESSION["tableName"] . " VALUES (NULL, '" . implode("', '", $wartosci) . "');";
-                $conn->query($sql);
-                echo $sql;
+                try {
+                    $sql = "INSERT INTO " . $_SESSION["tableName"] . " VALUES (NULL, '" . implode("', '", $wartosci) . "');";
+                    $result = $conn->query($sql);
+                    echo '<div class="success-container">';
+                    echo "Zapytanie: " . $sql . " <br> zostało wykonane pomyślnie. <br>";
+                    echo "Dodano nowy rekord ";
+                    echo '</div>';
+                }
+                catch (mysqli_sql_exception $e) {
+                    echo '<div class="error-container">';
+                    echo "Błąd podczas wykonywania zapytania:<br>" . $e->getMessage();
+                    echo '</div>';
+                }
 
             }
 
@@ -255,19 +272,39 @@ require_once '../includes/db_conn.php';
                 $nazwaKol1 = $_POST['nazwa1'];
                 $nazwaKol2 = $_POST['nazwa2'];
 
-                $sql = "DELETE FROM " . $_SESSION["tableName"] . " WHERE $nazwaKol1=$wart1 AND $nazwaKol2=$wart2;";
-                $conn->query($sql);
-                echo $sql;
+                try {
+                    $sql = "DELETE FROM " . $_SESSION["tableName"] . " WHERE $nazwaKol1=$wart1 AND $nazwaKol2=$wart2;";
+                    $conn->query($sql);
+                    echo '<div class="success-container">';
+                    echo "Zapytanie: " . $sql . " <br> zostało wykonane pomyślnie. <br>";
+                    echo "Rekord został usunięty";
+                    echo '</div>';
+                }
+                catch (mysqli_sql_exception $e) {
+                    echo '<div class="error-container">';
+                    echo "Błąd podczas wykonywania zapytania:<br> " . $e->getMessage();
+                    echo '</div>';
+                }
 
             }
 
             if (isset($_POST['delete'])) {
 
                 $wart = $_POST['id'];
-
-                $sql = "DELETE FROM " . $_SESSION["tableName"] . " WHERE id=$wart;";
-                $conn->query($sql);
-                echo $sql;
+                
+                try {
+                    $sql = "DELETE FROM " . $_SESSION["tableName"] . " WHERE id=$wart;";
+                    $conn->query($sql);
+                    echo '<div class="success-container">';
+                    echo "Zapytanie: " . $sql . " <br> zostało wykonane pomyślnie. <br>";
+                    echo "Rekord został usunięty";
+                    echo '</div>';
+                }    
+                catch (mysqli_sql_exception $e) {
+                    echo '<div class="error-container">';
+                    echo "Błąd podczas wykonywania zapytania:<br> " . $e->getMessage();
+                    echo '</div>';
+                }
             }
 
             ?>
