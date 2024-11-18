@@ -1,5 +1,6 @@
 <?php
 require_once "includes/db_conn.php";
+session_start();
 ?>
 <!DOCTYPE html>
 <html lang="pl">
@@ -31,25 +32,88 @@ require_once "includes/db_conn.php";
             attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
     </script>
-    <?php
-    $sql = "SELECT nazwa_restauracji,panstwo,miasto,ulica FROM restauracje;";
-    $result = $conn->query($sql);
-    echo '<div class="restauracje-container">';
-    if ($result->num_rows > 0) {
+    <form action="" method="post">
+        <button type="submit" name="panstwo" value="Polska"> Polska </button>
+        <button type="submit" name="panstwo" value="Włochy"> Włochy </button>
+    </form>
+
+
     
-        while($row = $result->fetch_assoc()) {
-            echo '<div class="restuaracja-box">';
-            echo "<p class='restauracja-nazwa'>" . $row["nazwa_restauracji"]."</p>";
-            echo '<span  class="restauracja-dane">';
-            echo "Państwo: " . $row["panstwo"]."<br>";
-            echo "Adres: " . $row["ulica"].', '.$row["miasto"]."";
-            echo '</span>';
-            echo '</div>';
-        }
-    } else {
-        echo "Brak wyników.";
+    <?php
+    echo '<div class="restauracje-container">';
+    if (isset($_POST["panstwo"])) {
+        $panstwo = $_POST['panstwo'];
+        $_SESSION['panstwo'] = $panstwo;
     }
-    echo '</div>';
+    
+    if (isset($_SESSION["panstwo"])) {
+
+    
+
+        $nazwaPanstwa = $_SESSION['panstwo'];
+        $sql = "SELECT * FROM restauracje WHERE panstwo = '" . $nazwaPanstwa . "';";
+        $result = $conn->query($sql);
+
+        
+        if ($result->num_rows > 0) {
+
+            while ($row = $result->fetch_assoc()) {
+                $idRestauracji = $row["id"];
+                echo '<div class="restuaracja-box">';
+                echo "<p class='restauracja-nazwa'>" . $row["nazwa_restauracji"] . "</p>";
+                echo '<span class="restauracja-dane">';
+                echo "Państwo: " . $row["panstwo"] . "<br>";
+                echo "Adres: " . $row["ulica"] . ', ' . $row["miasto"] . "";
+                echo '</span>';
+                echo '</div>';
+                echo '<form action="" method="POST">';
+                echo "<input type='submit' name='restauracja-button' value='$idRestauracji'>";
+                echo '</form>';
+            }
+        } else {
+            echo "Brak wyników.";
+        }
+        echo '</div>';
+    }
+
+        // WYŚWIETLANIE DAŃ
+        if (isset($_POST['restauracja-button'])) {
+            $idRestauracji = $_POST['restauracja-button'];
+            $_SESSION['idRestauracji'] = $idRestauracji;
+        }
+
+        if (isset($_SESSION['idRestauracji'])) {
+            $idRestauracji = $_POST['restauracja-button'];
+
+            echo '<div class="dania-container">';
+            echo "$idRestauracji";
+            echo '</div>';
+            unset($_SESSION['idRestauracji']);
+        }
+            /*$sql = "SELECT * FROM dania WHERE id_restauracji = '" . $idRestauracji . "';";
+            $result = $conn->query($sql);
+            echo '<div class="restauracje-container">';
+            if ($result->num_rows > 0) {
+
+                while ($row = $result->fetch_assoc()) {
+                    echo '<div class="restuaracja-box">';
+                    echo "<p class='restauracja-nazwa'>" . $row["nazwa_dania"] . "</p>";
+                    echo '<span  class="restauracja-dane">';
+                    echo "Państwo: " . $row["opis"] . "<br>";
+                    echo "Adres: " . $row["wegetarianskie"] . ', ' . $row["kuchnia"] . "";
+                    echo '</span>';
+                    echo '</div>';
+                }
+            } else {
+                echo "Brak wyników.";
+            }
+            echo '</div>';
+        }*/
+
+    
+
+
+
     ?>
 </body>
 

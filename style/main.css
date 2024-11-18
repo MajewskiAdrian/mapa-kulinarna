@@ -262,3 +262,7 @@ tr:nth-child(even) {
     border: 0.1rem solid #047400c5;
     box-shadow: 0 0 10px #05a30081;
 }
+
+.dania-container {
+    color:red;
+}
