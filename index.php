@@ -3,15 +3,15 @@ require_once "includes/db_conn.php";
 session_start();
 
 if (!isset($_COOKIE['liczba_odwiedzin'])) {
-    setcookie('liczba_odwiedzin', 1, time() + 60 * 60 * 24 * 7); // ustaw ciasteczko na 7 dni
+    setcookie('liczba_odwiedzin', 1, time() + 60 * 60 * 24 * 7); 
     $liczba_odwiedzin = 1;
-} else if (!isset($_SESSION['test'])) {
+} else if (!isset($_SESSION['wizyta_sesji'])) {
     $liczba_odwiedzin = $_COOKIE['liczba_odwiedzin'] + 1;
-    setcookie('liczba_odwiedzin', $liczba_odwiedzin, time() + 60 * 60 * 24 * 7); // aktualizuj ciasteczko
+    setcookie('liczba_odwiedzin', $liczba_odwiedzin, time() + 60 * 60 * 24 * 7); 
 }
 
-if (!isset($_SESSION['test'])) {
-    $_SESSION['test'] = 1;
+if (!isset($_SESSION['wizyta_sesji'])) {
+    $_SESSION['wizyta_sesji'] = 1;
     echo "Liczba odwiedzin: " . $_COOKIE['liczba_odwiedzin'] + 1 . "<br>";
 } else {
     echo "Liczba odwiedzin: " . $_COOKIE['liczba_odwiedzin'] . "<br>";
