@@ -2,6 +2,23 @@
 require_once "includes/db_conn.php";
 session_start();
 
+if (!isset($_COOKIE['liczba_odwiedzin'])) {
+    setcookie('liczba_odwiedzin', 1, time() + 60 * 60 * 24 * 7); 
+    $liczba_odwiedzin = 1;
+} else if (!isset($_SESSION['wizyta_sesji'])) {
+    $liczba_odwiedzin = $_COOKIE['liczba_odwiedzin'] + 1;
+    setcookie('liczba_odwiedzin', $liczba_odwiedzin, time() + 60 * 60 * 24 * 7); 
+}
+
+if (!isset($_SESSION['wizyta_sesji'])) {
+    $_SESSION['wizyta_sesji'] = 1;
+    echo "Liczba odwiedzin: " . $_COOKIE['liczba_odwiedzin'] + 1 . "<br>";
+} else {
+    echo "Liczba odwiedzin: " . $_COOKIE['liczba_odwiedzin'] . "<br>";
+}
+
+
+
 ?>
 <!DOCTYPE html>
 <html lang="pl">
@@ -48,7 +65,6 @@ session_start();
     }
     
     if (isset($_SESSION["panstwo"])) {
-    
         $nazwaPanstwa = $_SESSION['panstwo'];
 
         $sql = "SELECT * FROM restauracje WHERE panstwo = '" . $nazwaPanstwa . "';";
