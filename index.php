@@ -40,7 +40,7 @@ if (!isset($_SESSION['wizyta_sesji'])) {
         var map = L.map('map', {
             center: [20, 0], // początkowej pozycja mapy
             zoom: 2, // początkowy zoom
-            minZoom: 1.85, // min zoom
+            minZoom: 2.4, // min zoom
             maxZoom: 6, // max zoom
             maxBounds: [
                 [-90, -180], // border (maksymalnie na południe i na zachód)
@@ -58,63 +58,35 @@ if (!isset($_SESSION['wizyta_sesji'])) {
                 L.geoJSON(data, {
                     style: {
                         color: "#ff7800",
-                        weight: 2,
+                        weight: 1,
                         opacity: 0.65
                     },
                     onEachFeature: function (feature, layer) {
                         layer.on('click', function (e) {
-                            // Przesyłanie nazwy państwa do PHP
-                            var countryName = feature.properties.name;
-                            sendCountryToPHP(countryName);
+                            let countryName = feature.properties.name_pl;
+                            window.location.href = `index.php?country=${encodeURIComponent(countryName)}`;
                         });
                     }
                 }).addTo(map);
             })
             .catch(error => console.error('Błąd ładowania GeoJSON:', error));
 
-
-            function sendCountryToPHP(country) {
-
-                var xhttp = new XMLHttpRequest();
-                xhttp.open("POST", "test.php", true); // PHP skrypt
-                xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-                xhttp.send("country=" + encodeURIComponent(country));
-             }
     </script>
-    <?php
-    //echo test();
-    //test();
-
-        // Pobranie nazwy państwa z przesłanego formularza
-        if (isset($_SESSION["country"])) {
-
-            echo "Otrzymana nazwa państwa: " . $_SESSION["country"];
-            unset($_SESSION["country"]);
-            // Możesz tutaj wykonać inne operacje, np. zapis do bazy danych
-        }
-
-    ?>
-
-    <form action="" method="post">
-        <button type="submit" name="panstwo" value="Polska"> Polska </button>
-        <button type="submit" name="panstwo" value="Włochy"> Włochy </button>
-    </form>
-
-
 
     <?php
-    echo '<div class="restauracje-container">';
-    if (isset($_POST["panstwo"])) {
-        $panstwo = $_POST['panstwo'];
+    if (isset($_GET['country'])) {
+        $panstwo = $_GET['country'];
+        echo "Państwo: " . htmlspecialchars($panstwo);
         $_SESSION['panstwo'] = $panstwo;
     }
 
+
+    echo '<div class="restauracje-container">';
+
     if (isset($_SESSION["panstwo"])) {
         $nazwaPanstwa = $_SESSION['panstwo'];
-
         $sql = "SELECT * FROM restauracje WHERE panstwo = '" . $nazwaPanstwa . "';";
         $result = $conn->query($sql);
-
 
         if ($result->num_rows > 0) {
 
@@ -129,13 +101,12 @@ if (!isset($_SESSION['wizyta_sesji'])) {
                 echo "Adres: " . $row["ulica"] . ', ' . $row["miasto"] . "";
                 echo '</span>';
                 echo '</div>';
-
-                //echo "<input type='submit' name='restauracja-button' value='$idRestauracji'>";
                 echo '</button>';
                 echo '</form>';
             }
         } else {
             echo "Brak wyników.";
+            unset($_POST['restauracja-button']);
         }
         echo '</div>';
     }
@@ -170,27 +141,6 @@ if (!isset($_SESSION['wizyta_sesji'])) {
         $result = $conn->query($sql);
 
         $rowNumber = $result->num_rows;
-
-        /*if ($result->num_rows > 0) {
-            
-            $nazwyDan = [];
-            $opisyDan = [];
-            $wegetarianskie = [];
-            $kuchnia = [];
-
-
-            $tableValues = $result->fetch_all(MYSQLI_ASSOC);
-
-            while ($row = $result->fetch_assoc()) {
-                $nazwyDan[] = $row['nazwa_dania'];
-                $opisyDan[] = $row['opis'];
-                $wegetarianskie[] = $row['wegetarianskie'];
-                $kuchnia[] = $row['kuchnia'];
-            }
-        } else {
-            echo "Brak tabel.";
-        }*/
-
 
         if ($result->num_rows > 0) {
 
