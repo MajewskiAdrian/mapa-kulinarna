@@ -10,14 +10,6 @@ if (!isset($_COOKIE['liczba_odwiedzin'])) {
     setcookie('liczba_odwiedzin', $liczba_odwiedzin, time() + 60 * 60 * 24 * 7);
 }
 
-if (!isset($_SESSION['wizyta_sesji'])) {
-    $_SESSION['wizyta_sesji'] = 1;
-    echo "Liczba odwiedzin: " . $_COOKIE['liczba_odwiedzin'] + 1 . "<br>";
-} else {
-    echo "Liczba odwiedzin: " . $_COOKIE['liczba_odwiedzin'] . "<br>";
-}
-
-
 
 ?>
 <!DOCTYPE html>
@@ -72,6 +64,33 @@ if (!isset($_SESSION['wizyta_sesji'])) {
             .catch(error => console.error('Błąd ładowania GeoJSON:', error));
 
     </script>
+
+    <?php
+    if (!isset($_SESSION['wybor'])) {
+        $_SESSION['wybor'] = "restauracje";
+    }
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['wybor'])) {
+        if ($_POST['wybor'] === "restauracje") {
+            $_SESSION['wybor'] = "dania";
+            $_SESSION['restauracje'] = true;
+        } else {
+            $_SESSION['wybor'] = "restauracje";
+            $_SESSION['restauracje'] = false;
+        }
+
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit;
+    }
+    $wybor = $_SESSION['wybor'];
+    
+    echo '<form action="" method="post">';
+    echo '<button type="submit" name="wybor" value="' . $wybor . '">' . $wybor . '</button>';
+    echo '</form>';
+    
+
+    echo "Restauracje: " . ($_SESSION['restauracje']);   
+    ?>
+
 
     <?php
     if (isset($_GET['country'])) {
