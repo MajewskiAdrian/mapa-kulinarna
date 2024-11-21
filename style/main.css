@@ -8,7 +8,7 @@
     width: 70%;
     margin-left: auto;
     margin-right: auto;
-    box-shadow: 0px 0px 30px -14px rgba(66, 68, 90, 1);
+    box-shadow: 0px 0px 30px -14px #42445a;
     border-radius: 1rem;
     margin-top: 2rem;
 }
@@ -27,6 +27,36 @@ h1 {
 
 p {
     font-size: 1.6rem;
+}
+
+.button-wybor-dania,
+.button-wybor-restauracje {
+    margin-left: 1rem;
+    border: none;
+    width: 7.5rem;
+    height: 3rem;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease-in-out;
+}
+
+.button-wybor-dania {
+    background-color: #d3d3d3;
+    color: #303030;
+}
+
+.button-wybor-dania:hover {
+    box-shadow: 0px 0px 68px 4px #6a6c83;
+    transform: scale(1.03);
+}
+
+.button-wybor-restauracje {
+    background-color: #999999;
+    color: #303030;
+}
+
+.button-wybor-restauracje:hover {
+    box-shadow: 0px 0px 68px 4px #696969;
+    transform: scale(1.03);
 }
 
 .restauracje-container {

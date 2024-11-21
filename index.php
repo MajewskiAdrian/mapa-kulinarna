@@ -82,13 +82,11 @@ if (!isset($_COOKIE['liczba_odwiedzin'])) {
         exit;
     }
     $wybor = $_SESSION['wybor'];
-    
-    echo '<form action="" method="post">';
-    echo '<button type="submit" name="wybor" value="' . $wybor . '">' . $wybor . '</button>';
-    echo '</form>';
-    
 
-    echo "Restauracje: " . ($_SESSION['restauracje']);   
+    echo '<form action="" method="post">';
+    echo '<button type="submit" class="button-wybor-'. $wybor .'" name="wybor" value="' . $wybor . '">' . $wybor . '</button>';
+    echo '</form>';
+
     ?>
 
 
@@ -100,171 +98,246 @@ if (!isset($_COOKIE['liczba_odwiedzin'])) {
     }
 
 
-    echo '<div class="restauracje-container">';
+    
 
     if (isset($_SESSION["panstwo"])) {
         $nazwaPanstwa = $_SESSION['panstwo'];
-        $sql = "SELECT * FROM restauracje WHERE panstwo = '" . $nazwaPanstwa . "';";
-        $result = $conn->query($sql);
 
-        if ($result->num_rows > 0) {
+        // GUZIK DO DANIA/RESTAURACJE (if/else)
+        if (isset($_SESSION["restauracje"]) && $_SESSION["restauracje"]) {
+            echo '<div class="restauracje-container">';
+            $sql = "SELECT * FROM restauracje WHERE panstwo = '" . $nazwaPanstwa . "';";
+            $result = $conn->query($sql);
 
-            while ($row = $result->fetch_assoc()) {
-                $idRestauracji = $row["id"];
-                echo '<form action="" method="POST">';
-                echo '<button type="submit" class="button-restauracja" name="restauracja-button" value="' . $idRestauracji . '">';
-                echo '<div class="restuaracja-box">';
-                echo "<p class='restauracja-nazwa'>" . $row["nazwa_restauracji"] . "</p>";
-                echo '<span class="restauracja-dane">';
-                echo "Państwo: " . $row["panstwo"] . "<br>";
-                echo "Adres: " . $row["ulica"] . ', ' . $row["miasto"] . "";
-                echo '</span>';
-                echo '</div>';
-                echo '</button>';
-                echo '</form>';
+            if ($result->num_rows > 0) {
+
+                while ($row = $result->fetch_assoc()) {
+                    $idRestauracji = $row["id"];
+                    echo '<form action="" method="POST">';
+                    echo '<button type="submit" class="button-restauracja" name="restauracja-button" value="' . $idRestauracji . '">';
+                    echo '<div class="restuaracja-box">';
+                    echo "<p class='restauracja-nazwa'>" . $row["nazwa_restauracji"] . "</p>";
+                    echo '<span class="restauracja-dane">';
+                    echo "Państwo: " . $row["panstwo"] . "<br>";
+                    echo "Adres: " . $row["ulica"] . ', ' . $row["miasto"] . "";
+                    echo '</span>';
+                    echo '</div>';
+                    echo '</button>';
+                    echo '</form>';
+                }
+            } else {
+                echo "Brak wyników.";
+                unset($_POST['restauracja-button']);
             }
+            echo '</div>';
+            
+            // DANIA
         } else {
-            echo "Brak wyników.";
-            unset($_POST['restauracja-button']);
-        }
-        echo '</div>';
-    }
-
-    // WYŚWIETLANIE DAŃ
-    if (isset($_POST['restauracja-button'])) {
-        $idRestauracji = $_POST['restauracja-button'];
-        $_SESSION['idRestauracji'] = $idRestauracji;
-    }
-
-    if (isset($_SESSION['idRestauracji'])) {
-        $idRestauracji = $_POST['restauracja-button'];
-
-        echo '<div class="dania-container">';
-
-        unset($_SESSION['idRestauracji']);
-
-
-        $sql = "SELECT * FROM restauracje_dania WHERE id_restauracji = '" . $idRestauracji . "';";
-        $result = $conn->query($sql);
-
-        if ($result->num_rows > 0) {
-            $idDan = [];
-            while ($row = $result->fetch_assoc()) {
-                $idDan[] = $row['id_dania'];
-            }
-        } else {
-            echo "Brak tabel.";
-        }
-
-        $sql = "SELECT * FROM dania WHERE id IN (" . implode(", ", $idDan) . ");";
-        $result = $conn->query($sql);
-
-        $rowNumber = $result->num_rows;
-
-        if ($result->num_rows > 0) {
-
-            $daniaValues = $result->fetch_all(MYSQLI_ASSOC);
-        } else {
-            echo "Brak wartości.";
-        }
-
-        //print_r($daniaValues);
-    
-
-
-        for ($i = 0; $i < $rowNumber; $i++) {
-            echo '<div class="danie-box">';
-            echo '<img src="images/ciasto-z-jajem.jpg" class="zdjecie-danie">';
-            echo '<div class="danie-dane">';
-            echo "<h1>" . $daniaValues[$i]['nazwa_dania'] . " </h1>";
-            echo "<p>" . $daniaValues[$i]['opis'] . " </p>";
-            if ($daniaValues[$i]['wegetarianskie']) {
-                echo "<p>Czy jest wegetariańskie?: Tak</p>";
-            } else
-                echo "<p>Czy jest wegetariańskie?: Nie</p>";
-            echo "<p>Kuchnia: " . $daniaValues[$i]['kuchnia'] . " </p>";
-
-            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    
-            $sql = "SELECT * FROM dania_skladniki WHERE id_dania = '" . $daniaValues[$i]['id'] . "';";
+            // wybranie id restauracji z wybranego państwa
+            $sql = "SELECT id FROM restauracje WHERE panstwo='" . $_SESSION['panstwo'] . "';";
 
             $result = $conn->query($sql);
 
+            if ($result->num_rows > 0) {
+                $idRestauracji = [];
+                while ($row = $result->fetch_assoc()) {
+                    $idRestauracji[] = $row["id"];
+                }
+            } else {
+                echo '<div class="restauracje-container">';
+                echo "Brak wyników";
+                echo '</div>';
+                die();
+            }
+            
+            // wybieranie id dań z danej restauracji z danego państwa
+            $sql = "SELECT id_dania FROM restauracje_dania WHERE id_restauracji IN(" . implode(", ",$idRestauracji) . ");";
+            
+            $result = $conn->query($sql);
 
             if ($result->num_rows > 0) {
-                $sklad = [];
+                $idDan = [];
                 while ($row = $result->fetch_assoc()) {
-                    $sklad[] = $row['id_skladnika'];
+                    $idDan[] = $row["id_dania"];
+                }
+            } else {
+                echo "Brak wyników";
+            }
+
+            // wyciaganie dań przez id
+            $sql = "SELECT * FROM dania WHERE id IN (" . implode(", ", $idDan) . ");";
+            $result = $conn->query($sql);
+            echo '<div class="dania-container">';
+            $rowNumber = $result->num_rows;
+
+            if ($result->num_rows > 0) {
+
+                $daniaValues = $result->fetch_all(MYSQLI_ASSOC);
+            } else {
+                echo "Brak wartości.";
+            }
+    
+            for ($i = 0; $i < $rowNumber; $i++) {
+                echo '<div class="danie-box">';
+                echo '<img src="images/ciasto-z-jajem.jpg" class="zdjecie-danie">';
+                echo '<div class="danie-dane">';
+                echo "<h1>" . $daniaValues[$i]['nazwa_dania'] . " </h1>";
+                echo "<p>" . $daniaValues[$i]['opis'] . " </p>";
+                if ($daniaValues[$i]['wegetarianskie']) {
+                    echo "<p>Czy jest wegetariańskie?: Tak</p>";
+                } else
+                    echo "<p>Czy jest wegetariańskie?: Nie</p>";
+                echo "<p>Kuchnia: " . $daniaValues[$i]['kuchnia'] . " </p>";
+                
+            // wyciąganie nazwy restauracji
+            $sql = "SELECT id_restauracji FROM restauracje_dania WHERE id_dania = '" . $daniaValues[$i]['id'] . "';";
+            $result = $conn->query($sql);
+            if ($result->num_rows > 0) {
+
+                while ($row = $result->fetch_assoc()) {
+                    $idRestauracji_dania = $row["id_restauracji"];
+                }
+            } else {
+                echo "brak danych";
+            }
+
+            $sql = "SELECT nazwa_restauracji FROM restauracje WHERE id = '" . $idRestauracji_dania . "';";
+            $result = $conn->query($sql);
+            if ($result->num_rows > 0) {
+
+                while ($row = $result->fetch_assoc()) {
+                    $nazwaRestauracji_dania = $row["nazwa_restauracji"];
+                    echo "<p>Restauracja: $nazwaRestauracji_dania</p>";
+                }
+            } else {
+                echo "brak danych";
+            }
+                //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
+                $sql = "SELECT * FROM dania_skladniki WHERE id_dania = '" . $daniaValues[$i]['id'] . "';";
+
+                $result = $conn->query($sql);
+
+
+                if ($result->num_rows > 0) {
+                    $sklad = [];
+                    while ($row = $result->fetch_assoc()) {
+                        $sklad[] = $row['id_skladnika'];
+                    }
+                } else {
+                    echo "Brak tabel.";
+                }
+                echo "<p>Produkty: ";
+
+                $sql = "SELECT nazwa_skladnika FROM skladniki WHERE id IN (" . implode(", ", $sklad) . ");";
+                $result = $conn->query($sql);
+
+                if ($result->num_rows > 0) {
+                    $sklad_nazwy = [];
+                    while ($row = $result->fetch_assoc()) {
+                        $sklad_nazwy[] = $row['nazwa_skladnika'];
+                    }
+
+                    $skladiki = implode(", ", $sklad_nazwy);
+                    echo "$skladiki</p>";
+                    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                    echo "</div>";
+                    echo "</div>";
+
+                }
+            }
+            
+        }
+
+        // WYŚWIETLANIE DAŃ
+        if (isset($_POST['restauracja-button'])) {
+            $idRestauracji = $_POST['restauracja-button'];
+            $_SESSION['idRestauracji'] = $idRestauracji;
+        }
+
+        if (isset($_SESSION['idRestauracji'])) {
+            $idRestauracji = $_POST['restauracja-button'];
+
+            echo '<div class="dania-container">';
+
+            unset($_SESSION['idRestauracji']);
+
+
+            $sql = "SELECT * FROM restauracje_dania WHERE id_restauracji = '" . $idRestauracji . "';";
+            $result = $conn->query($sql);
+
+            if ($result->num_rows > 0) {
+                $idDan = [];
+                while ($row = $result->fetch_assoc()) {
+                    $idDan[] = $row['id_dania'];
                 }
             } else {
                 echo "Brak tabel.";
             }
-            echo "<p>Produkty: ";
 
-            $sql = "SELECT nazwa_skladnika FROM skladniki WHERE id IN (" . implode(", ", $sklad) . ");";
+            $sql = "SELECT * FROM dania WHERE id IN (" . implode(", ", $idDan) . ");";
             $result = $conn->query($sql);
 
+            $rowNumber = $result->num_rows;
+
             if ($result->num_rows > 0) {
-                $sklad_nazwy = [];
-                while ($row = $result->fetch_assoc()) {
-                    $sklad_nazwy[] = $row['nazwa_skladnika'];
-                }
 
-                $skladiki = implode(", ", $sklad_nazwy);
-                echo "$skladiki</p>";
+                $daniaValues = $result->fetch_all(MYSQLI_ASSOC);
+            } else {
+                echo "Brak wartości.";
+            }
 
-
-
-
-
+            //print_r($daniaValues);
+    
+            for ($i = 0; $i < $rowNumber; $i++) {
+                echo '<div class="danie-box">';
+                echo '<img src="images/ciasto-z-jajem.jpg" class="zdjecie-danie">';
+                echo '<div class="danie-dane">';
+                echo "<h1>" . $daniaValues[$i]['nazwa_dania'] . " </h1>";
+                echo "<p>" . $daniaValues[$i]['opis'] . " </p>";
+                if ($daniaValues[$i]['wegetarianskie']) {
+                    echo "<p>Czy jest wegetariańskie?: Tak</p>";
+                } else
+                    echo "<p>Czy jest wegetariańskie?: Nie</p>";
+                echo "<p>Kuchnia: " . $daniaValues[$i]['kuchnia'] . " </p>";
 
                 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                echo "</div>";
-                echo "</div>";
+    
+                $sql = "SELECT * FROM dania_skladniki WHERE id_dania = '" . $daniaValues[$i]['id'] . "';";
 
+                $result = $conn->query($sql);
+
+
+                if ($result->num_rows > 0) {
+                    $sklad = [];
+                    while ($row = $result->fetch_assoc()) {
+                        $sklad[] = $row['id_skladnika'];
+                    }
+                } else {
+                    echo "Brak tabel.";
+                }
+                echo "<p>Produkty: ";
+
+                $sql = "SELECT nazwa_skladnika FROM skladniki WHERE id IN (" . implode(", ", $sklad) . ");";
+                $result = $conn->query($sql);
+
+                if ($result->num_rows > 0) {
+                    $sklad_nazwy = [];
+                    while ($row = $result->fetch_assoc()) {
+                        $sklad_nazwy[] = $row['nazwa_skladnika'];
+                    }
+
+                    $skladiki = implode(", ", $sklad_nazwy);
+                    echo "$skladiki</p>";
+                    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                    echo "</div>";
+                    echo "</div>";
+
+                }
             }
-
-
-
-
-
-
-            /*print_r($daniaValues);
-            foreach ($daniaValues as $danieValue) {
-                echo "<div class='danie-box'>";
-                foreach ($danieValue as $dana) {
-                    echo $dana;
-                    echo "<br>";
-                } 
-                    
-                
-               
-                echo "</div>";
-            }*/
-
-
         }
-
-
-
-        /*if ($result->num_rows > 0) {
-
-            while ($row = $result->fetch_assoc()) {
-                echo '<div class="restuaracja-box">';
-                echo "<p class='restauracja-nazwa'>" . $row["nazwa_dania"] . "</p>";
-                echo '<span  class="restauracja-dane">';
-                echo "Państwo: " . $row["opis"] . "<br>";
-                echo "Adres: " . $row["wegetarianskie"] . ', ' . $row["kuchnia"] . "";
-                echo '</span>';
-                echo '</div>';
-            }
-        } else {
-            echo "Brak wyników.";
-        }*/
-
+        echo '</div>';
     }
-
-    echo '</div>';
 
     ?>
 </body>
