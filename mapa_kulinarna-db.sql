@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Lis 06, 2024 at 05:15 PM
+-- Generation Time: Lis 22, 2024 at 01:37 PM
 -- Wersja serwera: 10.4.32-MariaDB
 -- Wersja PHP: 8.2.12
 
@@ -20,6 +20,25 @@ SET time_zone = "+00:00";
 --
 -- Database: `mapa_kulinarna`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Struktura tabeli dla tabeli `administracja`
+--
+
+CREATE TABLE `administracja` (
+  `id` int(11) NOT NULL,
+  `username` varchar(50) NOT NULL,
+  `pwd` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `administracja`
+--
+
+INSERT INTO `administracja` (`id`, `username`, `pwd`) VALUES
+(1, 'admin', '$2y$12$CsF4.HFnlj4rqwM8ruma6.RBMI6YWA34lznwN14OVjtOnXYGUDdNy');
 
 -- --------------------------------------------------------
 
@@ -291,6 +310,61 @@ INSERT INTO `dania_skladniki` (`id_dania`, `id_skladnika`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Zastąpiona struktura widoku `dania_z_pomidorem`
+-- (See below for the actual view)
+--
+CREATE TABLE `dania_z_pomidorem` (
+`nazwa_dania` varchar(255)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Zastąpiona struktura widoku `liczba_skladnikow_w_daniu`
+-- (See below for the actual view)
+--
+CREATE TABLE `liczba_skladnikow_w_daniu` (
+`nazwa_dania` varchar(255)
+,`liczba_skladnikow` bigint(21)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Zastąpiona struktura widoku `liczba_wystapien_skladnikow`
+-- (See below for the actual view)
+--
+CREATE TABLE `liczba_wystapien_skladnikow` (
+`nazwa_skladnika` varchar(50)
+,`ilosc_wystapien` bigint(21)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Zastąpiona struktura widoku `najczestsze_skladniki`
+-- (See below for the actual view)
+--
+CREATE TABLE `najczestsze_skladniki` (
+`restauracja` varchar(255)
+,`nazwa_skladnika` varchar(50)
+,`liczba_wystapien` bigint(21)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Zastąpiona struktura widoku `potrawy_wegetarianskie`
+-- (See below for the actual view)
+--
+CREATE TABLE `potrawy_wegetarianskie` (
+`restauracja` varchar(255)
+,`nazwa_dania` varchar(255)
+);
+
+-- --------------------------------------------------------
+
+--
 -- Struktura tabeli dla tabeli `restauracje`
 --
 
@@ -360,6 +434,17 @@ INSERT INTO `restauracje_dania` (`id_restauracji`, `id_dania`) VALUES
 (6, 23),
 (6, 24),
 (6, 27);
+
+-- --------------------------------------------------------
+
+--
+-- Zastąpiona struktura widoku `restauracje_z_daniami_z_pomidorem`
+-- (See below for the actual view)
+--
+CREATE TABLE `restauracje_z_daniami_z_pomidorem` (
+`nazwa_restauracji` varchar(255)
+,`nazwa_dania` varchar(255)
+);
 
 -- --------------------------------------------------------
 
@@ -463,9 +548,98 @@ INSERT INTO `skladniki` (`id`, `nazwa_skladnika`) VALUES
 (84, 'jabłka'),
 (85, 'cynamon');
 
+-- --------------------------------------------------------
+
+--
+-- Struktura widoku `dania_z_pomidorem`
+--
+DROP TABLE IF EXISTS `dania_z_pomidorem`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `dania_z_pomidorem`  AS SELECT `d`.`nazwa_dania` AS `nazwa_dania` FROM ((`skladniki` `s` join `dania_skladniki` `ds` on(`s`.`id` = `ds`.`id_skladnika`)) join `dania` `d` on(`d`.`id` = `ds`.`id_dania`)) WHERE `s`.`nazwa_skladnika` = 'pomidor' ;
+
+-- --------------------------------------------------------
+
+--
+-- Struktura widoku `liczba_skladnikow_w_daniu`
+--
+DROP TABLE IF EXISTS `liczba_skladnikow_w_daniu`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `liczba_skladnikow_w_daniu`  AS SELECT `d`.`nazwa_dania` AS `nazwa_dania`, count(`ds`.`id_skladnika`) AS `liczba_skladnikow` FROM (`dania` `d` join `dania_skladniki` `ds` on(`d`.`id` = `ds`.`id_dania`)) GROUP BY `d`.`id`, `d`.`nazwa_dania` ;
+
+-- --------------------------------------------------------
+
+--
+-- Struktura widoku `liczba_wystapien_skladnikow`
+--
+DROP TABLE IF EXISTS `liczba_wystapien_skladnikow`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `liczba_wystapien_skladnikow`  AS SELECT `s`.`nazwa_skladnika` AS `nazwa_skladnika`, count(`ds`.`id_skladnika`) AS `ilosc_wystapien` FROM (`skladniki` `s` join `dania_skladniki` `ds` on(`s`.`id` = `ds`.`id_skladnika`)) GROUP BY `s`.`id`, `s`.`nazwa_skladnika` ORDER BY count(`ds`.`id_skladnika`) DESC ;
+
+-- --------------------------------------------------------
+
+--
+-- Struktura widoku `najczestsze_skladniki`
+--
+DROP TABLE IF EXISTS `najczestsze_skladniki`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `najczestsze_skladniki` AS 
+WITH temp AS (
+    SELECT 
+        `r`.`id` AS `id`, 
+        `r`.`nazwa_restauracji` AS `nazwa_restauracji`, 
+        `s`.`nazwa_skladnika` AS `nazwa_skladnika`, 
+        COUNT(`s`.`id`) AS `liczba_wystapien`, 
+        ROW_NUMBER() OVER (
+            PARTITION BY `r`.`nazwa_restauracji` 
+            ORDER BY COUNT(`s`.`id`) DESC
+        ) AS `ranking` 
+    FROM 
+        `restauracje` `r` 
+        JOIN `restauracje_dania` `rd` ON (`r`.`id` = `rd`.`id_restauracji`)
+        JOIN `dania_skladniki` `ds` ON (`rd`.`id_dania` = `ds`.`id_dania`)
+        JOIN `skladniki` `s` ON (`ds`.`id_skladnika` = `s`.`id`)
+    GROUP BY 
+        `r`.`nazwa_restauracji`, 
+        `s`.`nazwa_skladnika`
+)
+SELECT 
+    `temp`.`nazwa_restauracji` AS `restauracja`, 
+    `temp`.`nazwa_skladnika` AS `nazwa_skladnika`, 
+    `temp`.`liczba_wystapien` AS `liczba_wystapien`
+FROM 
+    `temp`
+WHERE 
+    `temp`.`ranking` = 1
+ORDER BY 
+    `temp`.`id` ASC;
+
+-- --------------------------------------------------------
+
+--
+-- Struktura widoku `potrawy_wegetarianskie`
+--
+DROP TABLE IF EXISTS `potrawy_wegetarianskie`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `potrawy_wegetarianskie`  AS SELECT `r`.`nazwa_restauracji` AS `restauracja`, `d`.`nazwa_dania` AS `nazwa_dania` FROM ((`restauracje` `r` join `restauracje_dania` `rd` on(`r`.`id` = `rd`.`id_restauracji`)) join `dania` `d` on(`rd`.`id_dania` = `d`.`id`)) WHERE `d`.`wegetarianskie` = 1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Struktura widoku `restauracje_z_daniami_z_pomidorem`
+--
+DROP TABLE IF EXISTS `restauracje_z_daniami_z_pomidorem`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `restauracje_z_daniami_z_pomidorem`  AS SELECT `r`.`nazwa_restauracji` AS `nazwa_restauracji`, `d`.`nazwa_dania` AS `nazwa_dania` FROM ((((`restauracje` `r` join `restauracje_dania` `rd` on(`r`.`id` = `rd`.`id_restauracji`)) join `dania_skladniki` `ds` on(`rd`.`id_dania` = `ds`.`id_dania`)) join `skladniki` `s` on(`s`.`id` = `ds`.`id_skladnika`)) join `dania` `d` on(`d`.`id` = `ds`.`id_dania`)) WHERE `s`.`nazwa_skladnika` = 'pomidor' ;
+
 --
 -- Indeksy dla zrzutów tabel
 --
+
+--
+-- Indeksy dla tabeli `administracja`
+--
+ALTER TABLE `administracja`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indeksy dla tabeli `dania`
@@ -502,6 +676,12 @@ ALTER TABLE `skladniki`
 --
 -- AUTO_INCREMENT for dumped tables
 --
+
+--
+-- AUTO_INCREMENT for table `administracja`
+--
+ALTER TABLE `administracja`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `dania`
