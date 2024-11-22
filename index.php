@@ -301,6 +301,17 @@ if (!isset($_COOKIE['liczba_odwiedzin'])) {
                     echo "<p>Czy jest wegetariańskie?: Nie</p>";
                 echo "<p>Kuchnia: " . $daniaValues[$i]['kuchnia'] . " </p>";
 
+            $sql = "SELECT nazwa_restauracji FROM restauracje WHERE id = '" . $idRestauracji . "';";
+            $result = $conn->query($sql);
+            if ($result->num_rows > 0) {
+
+                while ($row = $result->fetch_assoc()) {
+                    $nazwaRestauracji_dania = $row["nazwa_restauracji"];
+                    echo "<p>Restauracja: $nazwaRestauracji_dania</p>";
+                }
+            } else {
+                echo "brak danych";
+            }
                 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
                 $sql = "SELECT * FROM dania_skladniki WHERE id_dania = '" . $daniaValues[$i]['id'] . "';";
