@@ -1,0 +1,119 @@
+/* Rejestracja/Logowanie */
+:root {
+    font-size: 62.5%;
+    --kolor-tla: #101014;
+    --kolor-2: #343437;
+    --kolor-2-hover: #000000;
+    --kolor-3: #202024;
+    --kolor-czcionki: #ffffff;
+    --kolor-ceny: #e6e6e6;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.body-form {
+    background-color: var(--kolor-tla);
+    justify-content: center;
+    align-items: center;
+    color: var(--kolor-czcionki);
+    width: 100%;
+}
+
+.wrapper-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 1rem;
+    margin-top: 20vh;
+}
+
+.wrapper-form h4 {
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--kolor-3);
+    padding: 2rem;
+    border-radius: 1rem;
+    border: 0.1rem solid var(--kolor-2);
+    width: 100%;
+    max-width: 40vh;
+    box-shadow: 0 0 10px #ffffff1a;
+}
+
+
+
+form input {
+    margin-bottom: 1rem;
+    font-size: 1.6rem;
+}
+
+input[type="text"], input[type="password"], select, button {
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border: 0.15rem solid #fff4f436;
+    background-color: #202024;
+    color: #e6e6e6;
+}
+
+input[type="text"]:focus, 
+input[type="password"]:focus, 
+select:focus, 
+button:focus {
+    border: 0.15rem solid #fff4f436;
+    transition: all 0.4s ease-in-out;
+    box-shadow: 0px 0px 8px 5px #dbe7f7;
+    background-color: #20202488;
+}
+
+form button {
+    font-size: 2rem;
+    width: 40%;
+    background-color: #e6e6e6;
+    text-align: center;
+    color: var(--kolor-2);
+    margin-left: auto;
+    margin-right: auto;
+    cursor: pointer;
+    transition: 0.3s ease-in-out;
+    border-radius: 0.5rem;
+}
+
+form button:hover {
+    background-color: #e6e6e6c2;
+    text-align: center;
+    color: var(--kolor-2-hover);
+}
+
+
+.form-error, .form-success {
+    margin-top: 1rem;
+    background-color: var(--kolor-3);
+    padding: 2rem;
+    border-radius: 1rem;
+    width: 100%;
+    max-width: 40vh;
+    font-size: 1.6rem;
+}
+
+.form-error {
+    border: 0.1rem solid #c70000c2;
+    box-shadow: 0 0 10px #860000;
+}
+
+.form-success {
+    border: 0.1rem solid #047400c5;
+    box-shadow: 0 0 10px #05a30081;
+}
+

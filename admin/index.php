@@ -1,6 +1,10 @@
 <?php
 session_start();
 require_once '../includes/db_conn.php';
+if (!isset($_SESSION['user'])) {
+    header("location: ../login.php");
+    die();
+}
 ?>
 <!DOCTYPE html>
 <html lang="pl">
@@ -61,6 +65,14 @@ require_once '../includes/db_conn.php';
                 echo "$viewName";
                 echo '</button>';
             }
+            echo "</form>";
+
+            // Wylogowywanie
+            echo '<h1> Wylogowywanie </h1>';
+            echo '<form action="../includes/logout.inc.php" method="post">';
+            
+            echo "<button type='submit' class='button-tabele'> Wyloguj </button>";
+            
             echo "</form>";
 
 
