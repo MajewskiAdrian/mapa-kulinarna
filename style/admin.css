@@ -1,0 +1,15 @@
+input[type=text],
+input[type=number] {
+    background: #4646468a;
+    width: 100%;
+    height: 4.8rem;
+    border: none;
+    transition: all 0.4s ease-in-out;
+}
+
+input[type=text]:focus,
+input[type=number]:focus {
+    background-color: #ffffff88;
+    border: none;
+
+}

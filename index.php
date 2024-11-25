@@ -23,10 +23,52 @@ if (!isset($_COOKIE['liczba_odwiedzin'])) {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="style/main.css">
 
+
 </head>
 
 <body>
-    <div id="map"></div>
+    <nav class="nav">
+        <div class="search-column">
+            <!-- <div class="search-bar"> -->
+            <div class="search-bar-container">
+                <form action="" method="post" class="search-form">
+                    <input type="text" name="search" placeholder="Szukaj..." class="search-input">
+                    <button type="submit" name="search-button" class="search-button">🔍</button>
+                </form>
+            </div>
+            <?php
+
+
+
+
+            if (!isset($_SESSION['wybor'])) {
+                $_SESSION['wybor'] = "restauracje";
+            }
+            if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['wybor'])) {
+                if ($_POST['wybor'] === "restauracje") {
+                    $_SESSION['wybor'] = "dania";
+                    $_SESSION['restauracje'] = true;
+                } else {
+                    $_SESSION['wybor'] = "restauracje";
+                    $_SESSION['restauracje'] = false;
+                }
+
+                header("Location: " . $_SERVER['PHP_SELF']);
+                exit();
+            }
+            $wybor = $_SESSION['wybor'];
+
+            echo '<form action="" method="post">';
+            echo '<button type="submit" class="button-wybor-' . $wybor . '" name="wybor" value="' . $wybor . '">' . $wybor . '</button>';
+            echo '</form>';
+
+            ?>
+        </div>
+        <div id="map"></div>
+
+    </nav>
+
+
     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" crossorigin=""></script>
     <script>
         var map = L.map('map', {
@@ -53,8 +95,8 @@ if (!isset($_COOKIE['liczba_odwiedzin'])) {
                         weight: 1,
                         opacity: 0.65
                     },
-                    onEachFeature: function (feature, layer) {
-                        layer.on('click', function (e) {
+                    onEachFeature: function(feature, layer) {
+                        layer.on('click', function(e) {
                             let countryName = feature.properties.name_pl;
                             window.location.href = `index.php?country=${encodeURIComponent(countryName)}`;
                         });
@@ -62,147 +104,66 @@ if (!isset($_COOKIE['liczba_odwiedzin'])) {
                 }).addTo(map);
             })
             .catch(error => console.error('Błąd ładowania GeoJSON:', error));
-
     </script>
 
+
+
+
     <?php
-    if (!isset($_SESSION['wybor'])) {
-        $_SESSION['wybor'] = "restauracje";
-    }
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['wybor'])) {
-        if ($_POST['wybor'] === "restauracje") {
-            $_SESSION['wybor'] = "dania";
-            $_SESSION['restauracje'] = true;
+
+
+
+
+
+
+
+
+
+
+    //wynik search bara
+    if (isset($_POST['search-button'])) {
+        session_destroy();
+        $wyszukanie = $_POST['search'];
+        $sql = "SELECT * FROM dania WHERE nazwa_dania LIKE '" . $wyszukanie . "%';";
+        echo "$sql";
+
+        $result = $conn->query($sql);
+        echo '<div class="dania-container">';
+        $rowNumber = $result->num_rows;
+
+        if ($result->num_rows > 0) {
+
+            $daniaValues = $result->fetch_all(MYSQLI_ASSOC);
         } else {
-            $_SESSION['wybor'] = "restauracje";
-            $_SESSION['restauracje'] = false;
+            echo "Brak wyników.";
         }
 
-        header("Location: " . $_SERVER['PHP_SELF']);
-        exit;
-    }
-    $wybor = $_SESSION['wybor'];
 
-    echo '<form action="" method="post">';
-    echo '<button type="submit" class="button-wybor-'. $wybor .'" name="wybor" value="' . $wybor . '">' . $wybor . '</button>';
-    echo '</form>';
+        for ($i = 0; $i < $rowNumber; $i++) {
 
-    ?>
-
-
-    <?php
-    if (isset($_GET['country'])) {
-        $panstwo = $_GET['country'];
-        echo "Państwo: " . htmlspecialchars($panstwo);
-        $_SESSION['panstwo'] = $panstwo;
-    }
-
-
-    
-
-    if (isset($_SESSION["panstwo"])) {
-        $nazwaPanstwa = $_SESSION['panstwo'];
-
-        // GUZIK DO DANIA/RESTAURACJE (if/else)
-        if (isset($_SESSION["restauracje"]) && $_SESSION["restauracje"]) {
-            echo '<div class="restauracje-container">';
-            $sql = "SELECT * FROM restauracje WHERE panstwo = '" . $nazwaPanstwa . "';";
+            // wyciaganie sciezki zdjecia
+            $sql = "SELECT zdjecie FROM dania_zdjecia WHERE id_dania=" . $daniaValues[$i]['id'] . ";";
             $result = $conn->query($sql);
 
             if ($result->num_rows > 0) {
-
                 while ($row = $result->fetch_assoc()) {
-                    $idRestauracji = $row["id"];
-                    echo '<form action="" method="POST">';
-                    echo '<button type="submit" class="button-restauracja" name="restauracja-button" value="' . $idRestauracji . '">';
-                    echo '<div class="restuaracja-box">';
-                    echo "<p class='restauracja-nazwa'>" . $row["nazwa_restauracji"] . "</p>";
-                    echo '<span class="restauracja-dane">';
-                    echo "Państwo: " . $row["panstwo"] . "<br>";
-                    echo "Adres: " . $row["ulica"] . ', ' . $row["miasto"] . "";
-                    echo '</span>';
-                    echo '</div>';
-                    echo '</button>';
-                    echo '</form>';
+                    $sciezkaZdjecia = $row["zdjecie"];
                 }
             } else {
-                echo "Brak wyników.";
-                unset($_POST['restauracja-button']);
-            }
-            echo '</div>';
-            
-            // DANIA
-        } else {
-            // wybranie id restauracji z wybranego państwa
-            $sql = "SELECT id FROM restauracje WHERE panstwo='" . $_SESSION['panstwo'] . "';";
-
-            $result = $conn->query($sql);
-
-            if ($result->num_rows > 0) {
-                $idRestauracji = [];
-                while ($row = $result->fetch_assoc()) {
-                    $idRestauracji[] = $row["id"];
-                }
-            } else {
-                echo '<div class="restauracje-container">';
-                echo "Brak wyników";
-                echo '</div>';
-                die();
-            }
-            
-            // wybieranie id dań z danej restauracji z danego państwa
-            $sql = "SELECT id_dania FROM restauracje_dania WHERE id_restauracji IN(" . implode(", ",$idRestauracji) . ");";
-            
-            $result = $conn->query($sql);
-
-            if ($result->num_rows > 0) {
-                $idDan = [];
-                while ($row = $result->fetch_assoc()) {
-                    $idDan[] = $row["id_dania"];
-                }
-            } else {
-                echo "Brak wyników";
+                echo "brak danych";
             }
 
-            // wyciaganie dań przez id
-            $sql = "SELECT * FROM dania WHERE id IN (" . implode(", ", $idDan) . ");";
-            $result = $conn->query($sql);
-            echo '<div class="dania-container">';
-            $rowNumber = $result->num_rows;
+            echo '<div class="danie-box">';
+            echo '<img src="' . $sciezkaZdjecia . '" class="zdjecie-danie">';
+            echo '<div class="danie-dane">';
+            echo "<h1>" . $daniaValues[$i]['nazwa_dania'] . " </h1>";
+            echo "<p>" . $daniaValues[$i]['opis'] . " </p>";
+            if ($daniaValues[$i]['wegetarianskie']) {
+                echo "<p>Czy jest wegetariańskie?: Tak</p>";
+            } else
+                echo "<p>Czy jest wegetariańskie?: Nie</p>";
+            echo "<p>Kuchnia: " . $daniaValues[$i]['kuchnia'] . " </p>";
 
-            if ($result->num_rows > 0) {
-
-                $daniaValues = $result->fetch_all(MYSQLI_ASSOC);
-            } else {
-                echo "Brak wartości.";
-            }
-
-    
-            for ($i = 0; $i < $rowNumber; $i++) {
-
-                // wyciaganie sciezki zdjecia
-                $sql = "SELECT zdjecie FROM dania_zdjecia WHERE id_dania=" . $daniaValues[$i]['id'] . ";";
-                $result = $conn->query($sql);
-
-                if ($result->num_rows > 0) {
-                    while ($row = $result->fetch_assoc()) {
-                        $sciezkaZdjecia = $row["zdjecie"];
-                    }
-                } else {
-                    echo "brak danych";
-                }
-
-                echo '<div class="danie-box">';
-                echo '<img src="' . $sciezkaZdjecia . '" class="zdjecie-danie">';
-                echo '<div class="danie-dane">';
-                echo "<h1>" . $daniaValues[$i]['nazwa_dania'] . " </h1>";
-                echo "<p>" . $daniaValues[$i]['opis'] . " </p>";
-                if ($daniaValues[$i]['wegetarianskie']) {
-                    echo "<p>Czy jest wegetariańskie?: Tak</p>";
-                } else
-                    echo "<p>Czy jest wegetariańskie?: Nie</p>";
-                echo "<p>Kuchnia: " . $daniaValues[$i]['kuchnia'] . " </p>";
-                
             // wyciąganie nazwy restauracji
             $sql = "SELECT id_restauracji FROM restauracje_dania WHERE id_dania = '" . $daniaValues[$i]['id'] . "';";
             $result = $conn->query($sql);
@@ -226,156 +187,324 @@ if (!isset($_COOKIE['liczba_odwiedzin'])) {
             } else {
                 echo "brak danych";
             }
-                //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    
-                $sql = "SELECT * FROM dania_skladniki WHERE id_dania = '" . $daniaValues[$i]['id'] . "';";
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-                $result = $conn->query($sql);
+            $sql = "SELECT * FROM dania_skladniki WHERE id_dania = '" . $daniaValues[$i]['id'] . "';";
 
-
-                if ($result->num_rows > 0) {
-                    $sklad = [];
-                    while ($row = $result->fetch_assoc()) {
-                        $sklad[] = $row['id_skladnika'];
-                    }
-                } else {
-                    echo "Brak tabel.";
-                }
-                echo "<p>Produkty: ";
-
-                $sql = "SELECT nazwa_skladnika FROM skladniki WHERE id IN (" . implode(", ", $sklad) . ");";
-                $result = $conn->query($sql);
-
-                if ($result->num_rows > 0) {
-                    $sklad_nazwy = [];
-                    while ($row = $result->fetch_assoc()) {
-                        $sklad_nazwy[] = $row['nazwa_skladnika'];
-                    }
-
-                    $skladiki = implode(", ", $sklad_nazwy);
-                    echo "$skladiki</p>";
-                    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                    echo "</div>";
-                    echo "</div>";
-
-                }
-            }
-            
-        }
-
-        // WYŚWIETLANIE DAŃ
-        if (isset($_POST['restauracja-button'])) {
-            $idRestauracji = $_POST['restauracja-button'];
-            $_SESSION['idRestauracji'] = $idRestauracji;
-        }
-
-        if (isset($_SESSION['idRestauracji'])) {
-            $idRestauracji = $_POST['restauracja-button'];
-
-            echo '<div class="dania-container">';
-
-            unset($_SESSION['idRestauracji']);
-
-
-            $sql = "SELECT * FROM restauracje_dania WHERE id_restauracji = '" . $idRestauracji . "';";
             $result = $conn->query($sql);
 
+
             if ($result->num_rows > 0) {
-                $idDan = [];
+                $sklad = [];
                 while ($row = $result->fetch_assoc()) {
-                    $idDan[] = $row['id_dania'];
+                    $sklad[] = $row['id_skladnika'];
                 }
             } else {
                 echo "Brak tabel.";
             }
+            echo "<p>Produkty: ";
 
-            $sql = "SELECT * FROM dania WHERE id IN (" . implode(", ", $idDan) . ");";
+            $sql = "SELECT nazwa_skladnika FROM skladniki WHERE id IN (" . implode(", ", $sklad) . ");";
             $result = $conn->query($sql);
 
-            $rowNumber = $result->num_rows;
-
             if ($result->num_rows > 0) {
+                $sklad_nazwy = [];
+                while ($row = $result->fetch_assoc()) {
+                    $sklad_nazwy[] = $row['nazwa_skladnika'];
+                }
 
-                $daniaValues = $result->fetch_all(MYSQLI_ASSOC);
-            } else {
-                echo "Brak wartości.";
+                $skladiki = implode(", ", $sklad_nazwy);
+                echo "$skladiki</p>";
+                //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                echo "</div>";
+                echo "</div>";
             }
+        }
+    } else {
 
-            //print_r($daniaValues);
-            
-            
-            for ($i = 0; $i < $rowNumber; $i++) {
-                
-                // wyciaganie sciezki zdjecia
-                $sql = "SELECT zdjecie FROM dania_zdjecia WHERE id_dania=" . $daniaValues[$i]['id'] . ";";
+
+        if (isset($_GET['country'])) {
+            $panstwo = $_GET['country'];
+            echo "Państwo: " . htmlspecialchars($panstwo);
+            $_SESSION['panstwo'] = $panstwo;
+        }
+        if (isset($_SESSION["panstwo"])) {
+            $nazwaPanstwa = $_SESSION['panstwo'];
+
+            // GUZIK DO DANIA/RESTAURACJE (if/else)
+            if (isset($_SESSION["restauracje"]) && $_SESSION["restauracje"]) {
+                echo '<div class="restauracje-container">';
+                $sql = "SELECT * FROM restauracje WHERE panstwo = '" . $nazwaPanstwa . "';";
                 $result = $conn->query($sql);
 
                 if ($result->num_rows > 0) {
+
                     while ($row = $result->fetch_assoc()) {
-                        $sciezkaZdjecia = $row["zdjecie"];
+                        $idRestauracji = $row["id"];
+                        echo '<form action="" method="POST">';
+                        echo '<button type="submit" class="button-restauracja" name="restauracja-button" value="' . $idRestauracji . '">';
+                        echo '<div class="restuaracja-box">';
+                        echo "<p class='restauracja-nazwa'>" . $row["nazwa_restauracji"] . "</p>";
+                        echo '<span class="restauracja-dane">';
+                        echo "Państwo: " . $row["panstwo"] . "<br>";
+                        echo "Adres: " . $row["ulica"] . ', ' . $row["miasto"] . "";
+                        echo '</span>';
+                        echo '</div>';
+                        echo '</button>';
+                        echo '</form>';
                     }
                 } else {
-                    echo "brak danych";
+                    echo "Brak wyników.";
+                    unset($_POST['restauracja-button']);
                 }
-                
-                echo '<div class="danie-box">';
-                echo '<img src="' . $sciezkaZdjecia . '" class="zdjecie-danie">';
-                echo '<div class="danie-dane">';
-                echo "<h1>" . $daniaValues[$i]['nazwa_dania'] . " </h1>";
-                echo "<p>" . $daniaValues[$i]['opis'] . " </p>";
-                if ($daniaValues[$i]['wegetarianskie']) {
-                    echo "<p>Czy jest wegetariańskie?: Tak</p>";
-                } else
-                    echo "<p>Czy jest wegetariańskie?: Nie</p>";
-                echo "<p>Kuchnia: " . $daniaValues[$i]['kuchnia'] . " </p>";
+                echo '</div>';
 
-            $sql = "SELECT nazwa_restauracji FROM restauracje WHERE id = '" . $idRestauracji . "';";
-            $result = $conn->query($sql);
-            if ($result->num_rows > 0) {
-
-                while ($row = $result->fetch_assoc()) {
-                    $nazwaRestauracji_dania = $row["nazwa_restauracji"];
-                    echo "<p>Restauracja: $nazwaRestauracji_dania</p>";
-                }
+                // DANIA
             } else {
-                echo "brak danych";
-            }
-                //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    
-                $sql = "SELECT * FROM dania_skladniki WHERE id_dania = '" . $daniaValues[$i]['id'] . "';";
+                // wybranie id restauracji z wybranego państwa
+                $sql = "SELECT id FROM restauracje WHERE panstwo='" . $_SESSION['panstwo'] . "';";
 
                 $result = $conn->query($sql);
 
+                if ($result->num_rows > 0) {
+                    $idRestauracji = [];
+                    while ($row = $result->fetch_assoc()) {
+                        $idRestauracji[] = $row["id"];
+                    }
+                } else {
+                    echo '<div class="restauracje-container">';
+                    echo "Brak wyników";
+                    echo '</div>';
+                    die();
+                }
+
+                // wybieranie id dań z danej restauracji z danego państwa
+                $sql = "SELECT id_dania FROM restauracje_dania WHERE id_restauracji IN(" . implode(", ", $idRestauracji) . ");";
+
+                $result = $conn->query($sql);
 
                 if ($result->num_rows > 0) {
-                    $sklad = [];
+                    $idDan = [];
                     while ($row = $result->fetch_assoc()) {
-                        $sklad[] = $row['id_skladnika'];
+                        $idDan[] = $row["id_dania"];
+                    }
+                } else {
+                    echo "Brak wyników";
+                }
+
+                // wyciaganie dań przez id
+                $sql = "SELECT * FROM dania WHERE id IN (" . implode(", ", $idDan) . ");";
+                $result = $conn->query($sql);
+                echo '<div class="dania-container">';
+                $rowNumber = $result->num_rows;
+
+                if ($result->num_rows > 0) {
+
+                    $daniaValues = $result->fetch_all(MYSQLI_ASSOC);
+                } else {
+                    echo "Brak wartości.";
+                }
+
+
+                for ($i = 0; $i < $rowNumber; $i++) {
+
+                    // wyciaganie sciezki zdjecia
+                    $sql = "SELECT zdjecie FROM dania_zdjecia WHERE id_dania=" . $daniaValues[$i]['id'] . ";";
+                    $result = $conn->query($sql);
+
+                    if ($result->num_rows > 0) {
+                        while ($row = $result->fetch_assoc()) {
+                            $sciezkaZdjecia = $row["zdjecie"];
+                        }
+                    } else {
+                        echo "brak danych";
+                    }
+
+                    echo '<div class="danie-box">';
+                    echo '<img src="' . $sciezkaZdjecia . '" class="zdjecie-danie">';
+                    echo '<div class="danie-dane">';
+                    echo "<h1>" . $daniaValues[$i]['nazwa_dania'] . " </h1>";
+                    echo "<p>" . $daniaValues[$i]['opis'] . " </p>";
+                    if ($daniaValues[$i]['wegetarianskie']) {
+                        echo "<p>Czy jest wegetariańskie?: Tak</p>";
+                    } else
+                        echo "<p>Czy jest wegetariańskie?: Nie</p>";
+                    echo "<p>Kuchnia: " . $daniaValues[$i]['kuchnia'] . " </p>";
+
+                    // wyciąganie nazwy restauracji
+                    $sql = "SELECT id_restauracji FROM restauracje_dania WHERE id_dania = '" . $daniaValues[$i]['id'] . "';";
+                    $result = $conn->query($sql);
+                    if ($result->num_rows > 0) {
+
+                        while ($row = $result->fetch_assoc()) {
+                            $idRestauracji_dania = $row["id_restauracji"];
+                        }
+                    } else {
+                        echo "brak danych";
+                    }
+
+                    $sql = "SELECT nazwa_restauracji FROM restauracje WHERE id = '" . $idRestauracji_dania . "';";
+                    $result = $conn->query($sql);
+                    if ($result->num_rows > 0) {
+
+                        while ($row = $result->fetch_assoc()) {
+                            $nazwaRestauracji_dania = $row["nazwa_restauracji"];
+                            echo "<p>Restauracja: $nazwaRestauracji_dania</p>";
+                        }
+                    } else {
+                        echo "brak danych";
+                    }
+                    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+                    $sql = "SELECT * FROM dania_skladniki WHERE id_dania = '" . $daniaValues[$i]['id'] . "';";
+
+                    $result = $conn->query($sql);
+
+
+                    if ($result->num_rows > 0) {
+                        $sklad = [];
+                        while ($row = $result->fetch_assoc()) {
+                            $sklad[] = $row['id_skladnika'];
+                        }
+                    } else {
+                        echo "Brak tabel.";
+                    }
+                    echo "<p>Produkty: ";
+
+                    $sql = "SELECT nazwa_skladnika FROM skladniki WHERE id IN (" . implode(", ", $sklad) . ");";
+                    $result = $conn->query($sql);
+
+                    if ($result->num_rows > 0) {
+                        $sklad_nazwy = [];
+                        while ($row = $result->fetch_assoc()) {
+                            $sklad_nazwy[] = $row['nazwa_skladnika'];
+                        }
+
+                        $skladiki = implode(", ", $sklad_nazwy);
+                        echo "$skladiki</p>";
+                        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                        echo "</div>";
+                        echo "</div>";
+                    }
+                }
+            }
+
+
+
+
+            // WYŚWIETLANIE DAŃ
+            if (isset($_POST['restauracja-button'])) {
+                $idRestauracji = $_POST['restauracja-button'];
+                $_SESSION['idRestauracji'] = $idRestauracji;
+            }
+
+            if (isset($_SESSION['idRestauracji'])) {
+                $idRestauracji = $_POST['restauracja-button'];
+
+                echo '<div class="dania-container">';
+
+                unset($_SESSION['idRestauracji']);
+
+
+                $sql = "SELECT * FROM restauracje_dania WHERE id_restauracji = '" . $idRestauracji . "';";
+                $result = $conn->query($sql);
+
+                if ($result->num_rows > 0) {
+                    $idDan = [];
+                    while ($row = $result->fetch_assoc()) {
+                        $idDan[] = $row['id_dania'];
                     }
                 } else {
                     echo "Brak tabel.";
                 }
-                echo "<p>Produkty: ";
 
-                $sql = "SELECT nazwa_skladnika FROM skladniki WHERE id IN (" . implode(", ", $sklad) . ");";
+                $sql = "SELECT * FROM dania WHERE id IN (" . implode(", ", $idDan) . ");";
                 $result = $conn->query($sql);
 
+                $rowNumber = $result->num_rows;
+
                 if ($result->num_rows > 0) {
-                    $sklad_nazwy = [];
-                    while ($row = $result->fetch_assoc()) {
-                        $sklad_nazwy[] = $row['nazwa_skladnika'];
+
+                    $daniaValues = $result->fetch_all(MYSQLI_ASSOC);
+                } else {
+                    echo "Brak wartości.";
+                }
+
+                //print_r($daniaValues);
+
+
+                for ($i = 0; $i < $rowNumber; $i++) {
+
+                    // wyciaganie sciezki zdjecia
+                    $sql = "SELECT zdjecie FROM dania_zdjecia WHERE id_dania=" . $daniaValues[$i]['id'] . ";";
+                    $result = $conn->query($sql);
+
+                    if ($result->num_rows > 0) {
+                        while ($row = $result->fetch_assoc()) {
+                            $sciezkaZdjecia = $row["zdjecie"];
+                        }
+                    } else {
+                        echo "brak danych";
                     }
 
-                    $skladiki = implode(", ", $sklad_nazwy);
-                    echo "$skladiki</p>";
-                    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                    echo "</div>";
-                    echo "</div>";
+                    echo '<div class="danie-box">';
+                    echo '<img src="' . $sciezkaZdjecia . '" class="zdjecie-danie">';
+                    echo '<div class="danie-dane">';
+                    echo "<h1>" . $daniaValues[$i]['nazwa_dania'] . " </h1>";
+                    echo "<p>" . $daniaValues[$i]['opis'] . " </p>";
+                    if ($daniaValues[$i]['wegetarianskie']) {
+                        echo "<p>Czy jest wegetariańskie?: Tak</p>";
+                    } else
+                        echo "<p>Czy jest wegetariańskie?: Nie</p>";
+                    echo "<p>Kuchnia: " . $daniaValues[$i]['kuchnia'] . " </p>";
 
+                    $sql = "SELECT nazwa_restauracji FROM restauracje WHERE id = '" . $idRestauracji . "';";
+                    $result = $conn->query($sql);
+                    if ($result->num_rows > 0) {
+
+                        while ($row = $result->fetch_assoc()) {
+                            $nazwaRestauracji_dania = $row["nazwa_restauracji"];
+                            echo "<p>Restauracja: $nazwaRestauracji_dania</p>";
+                        }
+                    } else {
+                        echo "brak danych";
+                    }
+                    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+                    $sql = "SELECT * FROM dania_skladniki WHERE id_dania = '" . $daniaValues[$i]['id'] . "';";
+
+                    $result = $conn->query($sql);
+
+
+                    if ($result->num_rows > 0) {
+                        $sklad = [];
+                        while ($row = $result->fetch_assoc()) {
+                            $sklad[] = $row['id_skladnika'];
+                        }
+                    } else {
+                        echo "Brak tabel.";
+                    }
+                    echo "<p>Produkty: ";
+
+                    $sql = "SELECT nazwa_skladnika FROM skladniki WHERE id IN (" . implode(", ", $sklad) . ");";
+                    $result = $conn->query($sql);
+
+                    if ($result->num_rows > 0) {
+                        $sklad_nazwy = [];
+                        while ($row = $result->fetch_assoc()) {
+                            $sklad_nazwy[] = $row['nazwa_skladnika'];
+                        }
+
+                        $skladiki = implode(", ", $sklad_nazwy);
+                        echo "$skladiki</p>";
+                        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                        echo "</div>";
+                        echo "</div>";
+                    }
                 }
             }
+            echo '</div>';
         }
-        echo '</div>';
     }
 
     ?>
