@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Lis 22, 2024 at 01:37 PM
+-- Generation Time: Lis 25, 2024 at 03:24 PM
 -- Wersja serwera: 10.4.32-MariaDB
 -- Wersja PHP: 8.2.12
 
@@ -306,6 +306,53 @@ INSERT INTO `dania_skladniki` (`id_dania`, `id_skladnika`) VALUES
 (4, 83),
 (7, 84),
 (7, 85);
+
+-- --------------------------------------------------------
+
+--
+-- Struktura tabeli dla tabeli `dania_zdjecia`
+--
+
+CREATE TABLE `dania_zdjecia` (
+  `id_dania` int(11) NOT NULL,
+  `zdjecie` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `dania_zdjecia`
+--
+
+INSERT INTO `dania_zdjecia` (`id_dania`, `zdjecie`) VALUES
+(1, ' images/Polska/makowiec-1.jpg'),
+(2, ' images/Polska/pierogi-1.jpg'),
+(3, ' images/Polska/golabki-1.jpg'),
+(4, ' images/Polska/sernik-1.jpg'),
+(5, ' images/Polska/golonka-1.jpg'),
+(6, ' images/Polska/gulasz-1.jpg'),
+(7, ' images/Polska/szarlotka-1.jpg'),
+(8, ' images/Polska/rosol-1.jpg'),
+(9, ' images/Polska/kopytka-1.jpg'),
+(10, ' images/Polska/zurek-1.jpg'),
+(11, ' images/Polska/bigos-1.jpg'),
+(12, ' images/Polska/kotlet-schabowy-1.jpg'),
+(13, ' images/Polska/pomidorowa-1.jpg'),
+(14, ' images/Polska/paszteciki-1.jpg'),
+(15, ' images/Polska/kremowka-1.jpg'),
+(16, ' images/wlochy/pizza-margherita-1.jpg'),
+(17, ' images/wlochy/risotto-z-grzybami-1.jpg'),
+(18, ' images/wlochy/spaghetti-bolognese-1.jpg'),
+(19, ' images/wlochy/carbonara-1.jpg'),
+(20, ' images/wlochy/ravioli-z-homarem-1.jpg'),
+(21, ' images/wlochy/gnocchi-alla-sorrentina-1.jpg'),
+(22, ' images/wlochy/tiramisu-1.jpg'),
+(23, ' images/wlochy/pizza-napoletana-1.jpg'),
+(24, ' images/wlochy/bruschetta-1.jpg'),
+(25, ' images/wlochy/torrone-1.jpg'),
+(26, ' images/wlochy/panna-cotta-1.jpg'),
+(27, ' images/wlochy/focaccia-1.jpg'),
+(28, ' images/wlochy/carpaccio-1.jpg'),
+(29, ' images/wlochy/cannoli-1.jpg'),
+(30, ' images/wlochy/lasagne-1.jpg');
 
 -- --------------------------------------------------------
 
@@ -613,6 +660,7 @@ WHERE
 ORDER BY 
     `temp`.`id` ASC;
 
+
 -- --------------------------------------------------------
 
 --
@@ -653,6 +701,12 @@ ALTER TABLE `dania`
 ALTER TABLE `dania_skladniki`
   ADD PRIMARY KEY (`id_skladnika`,`id_dania`),
   ADD KEY `id_dania` (`id_dania`);
+
+--
+-- Indeksy dla tabeli `dania_zdjecia`
+--
+ALTER TABLE `dania_zdjecia`
+  ADD PRIMARY KEY (`id_dania`,`zdjecie`);
 
 --
 -- Indeksy dla tabeli `restauracje`
@@ -711,6 +765,12 @@ ALTER TABLE `skladniki`
 ALTER TABLE `dania_skladniki`
   ADD CONSTRAINT `dania_skladniki_ibfk_1` FOREIGN KEY (`id_skladnika`) REFERENCES `skladniki` (`id`),
   ADD CONSTRAINT `dania_skladniki_ibfk_2` FOREIGN KEY (`id_dania`) REFERENCES `dania` (`id`);
+
+--
+-- Constraints for table `dania_zdjecia`
+--
+ALTER TABLE `dania_zdjecia`
+  ADD CONSTRAINT `dania_zdjecia_ibfk_1` FOREIGN KEY (`id_dania`) REFERENCES `dania` (`id`);
 
 --
 -- Constraints for table `restauracje_dania`

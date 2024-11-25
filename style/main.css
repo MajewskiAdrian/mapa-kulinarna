@@ -3,11 +3,107 @@
     --backgrund-color: #0e0e0ee1;
 }
 
+.transition {
+    transition: all 0.15s ease-in-out; /* Zmiana wszystkich właściwości z animacją trwającą 0.3 sekundy */
+}
+
+.nav {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.search-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 15%;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+.search-bar-container {
+    width: 100%;
+    display: flex;
+    justify-content: center; 
+    margin: 20px 0;
+}
+
+.search-form {
+    display: flex;
+    align-items: center;
+    width: 60%; 
+    max-width: 600px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    overflow: hidden; 
+    background: #eceaea;
+}
+
+.search-input {
+    width: 80%; 
+    padding: 10px;
+    border: none;
+    outline: none; 
+    font-size: 16px;
+}
+
+.search-button {
+    width: 20%; 
+    background-color: rgba(201, 0, 0, 0); 
+    color: white;
+    border: none;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.3s ease-in-out;
+}
+
+.search-button:hover {
+    transform: scale(1.06);
+}
+
+.button-wybor-dania,
+.button-wybor-restauracje {
+    margin-left: auto;
+    margin-right: auto;
+    border: none;
+    width: 7.5rem;
+    height: 3rem;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease-in-out;
+}
+
+.button-wybor-dania {
+    background: #eceaea;
+    color: #303030;
+}
+
+.button-wybor-dania:hover {
+    box-shadow: 0px 0px 68px 4px #6a6c83;
+    transform: scale(1.03);
+}
+
+.button-wybor-restauracje {
+    background: #eceaea;
+    color: #303030;
+}
+
+.button-wybor-restauracje:hover {
+    box-shadow: 0px 0px 68px 4px #696969;
+    transform: scale(1.03);
+}
+
 #map {
     height: 600px;
     width: 70%;
-    margin-left: auto;
-    margin-right: auto;
     box-shadow: 0px 0px 30px -14px #42445a;
     border-radius: 1rem;
     margin-top: 2rem;
@@ -27,36 +123,6 @@ h1 {
 
 p {
     font-size: 1.6rem;
-}
-
-.button-wybor-dania,
-.button-wybor-restauracje {
-    margin-left: 1rem;
-    border: none;
-    width: 7.5rem;
-    height: 3rem;
-    border-radius: 0.5rem;
-    transition: all 0.2s ease-in-out;
-}
-
-.button-wybor-dania {
-    background-color: #d3d3d3;
-    color: #303030;
-}
-
-.button-wybor-dania:hover {
-    box-shadow: 0px 0px 68px 4px #6a6c83;
-    transform: scale(1.03);
-}
-
-.button-wybor-restauracje {
-    background-color: #999999;
-    color: #303030;
-}
-
-.button-wybor-restauracje:hover {
-    box-shadow: 0px 0px 68px 4px #696969;
-    transform: scale(1.03);
 }
 
 .restauracje-container {
@@ -87,6 +153,7 @@ p {
     box-shadow: 0px 0px 68px 4px #6a6c83;
     /*transform: scale(1.05);*/
 }
+
 .restauracja-nazwa {
     font-size: 1.6rem;
     font-weight: bold;
@@ -162,21 +229,6 @@ td {
 
 }
 
-input[type=text],
-input[type=number] {
-    background: #4646468a;
-    width: 100%;
-    height: 4.8rem;
-    border: none;
-    transition: all 0.4s ease-in-out;
-}
-
-input[type=text]:focus,
-input[type=number]:focus {
-    background-color: #ffffff88;
-    border: none;
-
-}
 
 .button-edit {
     background: #00000000;
