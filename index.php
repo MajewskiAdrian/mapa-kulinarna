@@ -176,10 +176,24 @@ if (!isset($_COOKIE['liczba_odwiedzin'])) {
             } else {
                 echo "Brak wartości.";
             }
+
     
             for ($i = 0; $i < $rowNumber; $i++) {
+
+                // wyciaganie sciezki zdjecia
+                $sql = "SELECT zdjecie FROM dania_zdjecia WHERE id_dania=" . $daniaValues[$i]['id'] . ";";
+                $result = $conn->query($sql);
+
+                if ($result->num_rows > 0) {
+                    while ($row = $result->fetch_assoc()) {
+                        $sciezkaZdjecia = $row["zdjecie"];
+                    }
+                } else {
+                    echo "brak danych";
+                }
+
                 echo '<div class="danie-box">';
-                echo '<img src="images/ciasto-z-jajem.jpg" class="zdjecie-danie">';
+                echo '<img src="' . $sciezkaZdjecia . '" class="zdjecie-danie">';
                 echo '<div class="danie-dane">';
                 echo "<h1>" . $daniaValues[$i]['nazwa_dania'] . " </h1>";
                 echo "<p>" . $daniaValues[$i]['opis'] . " </p>";
@@ -288,10 +302,24 @@ if (!isset($_COOKIE['liczba_odwiedzin'])) {
             }
 
             //print_r($daniaValues);
-    
+            
+            
             for ($i = 0; $i < $rowNumber; $i++) {
+                
+                // wyciaganie sciezki zdjecia
+                $sql = "SELECT zdjecie FROM dania_zdjecia WHERE id_dania=" . $daniaValues[$i]['id'] . ";";
+                $result = $conn->query($sql);
+
+                if ($result->num_rows > 0) {
+                    while ($row = $result->fetch_assoc()) {
+                        $sciezkaZdjecia = $row["zdjecie"];
+                    }
+                } else {
+                    echo "brak danych";
+                }
+                
                 echo '<div class="danie-box">';
-                echo '<img src="images/ciasto-z-jajem.jpg" class="zdjecie-danie">';
+                echo '<img src="' . $sciezkaZdjecia . '" class="zdjecie-danie">';
                 echo '<div class="danie-dane">';
                 echo "<h1>" . $daniaValues[$i]['nazwa_dania'] . " </h1>";
                 echo "<p>" . $daniaValues[$i]['opis'] . " </p>";
