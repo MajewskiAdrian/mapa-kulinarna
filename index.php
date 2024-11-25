@@ -91,41 +91,49 @@ if (!isset($_COOKIE['liczba_odwiedzin'])) {
                 // Dodanie warstwy GeoJSON do mapy
                 L.geoJSON(data, {
                     style: {
-                        color: "#ff7800",
-                        weight: 1,
-                        opacity: 0.65
+                        weight: 0.75,
+                        color: '#a1a1a1cc',
+                        opacity: 0.2,
+                        fillColor: '#000000FF',
+                        fillOpacity: 0.35
                     },
                     onEachFeature: function(feature, layer) {
                         layer.on('click', function(e) {
                             let countryName = feature.properties.name_pl;
                             window.location.href = `index.php?country=${encodeURIComponent(countryName)}`;
                         });
+
+                        layer.on('mouseover', function() {
+                            layer.setStyle({
+                                weight: 0.7,
+                                color: '#a1a1a1cc',
+                                fillColor: '#a1a1a1cc',
+                                fillOpacity: 0.5
+                            });
+                            layer._path.classList.add('transition');
+                        });
+
+                        layer.on('mouseout', function() {
+                            layer.setStyle({
+                                weight: 0.75,
+                                color: '#a1a1a1cc',
+                                opacity: 0.2,
+                                fillColor: '#000000FF',
+                                fillOpacity: 0.35
+                            });
+                            layer._path.classList.add('transition');
+                        });
                     }
                 }).addTo(map);
             })
             .catch(error => console.error('Błąd ładowania GeoJSON:', error));
     </script>
-
-
-
-
     <?php
-
-
-
-
-
-
-
-
-
-
     //wynik search bara
     if (isset($_POST['search-button'])) {
         session_destroy();
         $wyszukanie = $_POST['search'];
         $sql = "SELECT * FROM dania WHERE nazwa_dania LIKE '" . $wyszukanie . "%';";
-        echo "$sql";
 
         $result = $conn->query($sql);
         echo '<div class="dania-container">';

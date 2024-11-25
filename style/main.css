@@ -3,6 +3,10 @@
     --backgrund-color: #0e0e0ee1;
 }
 
+.transition {
+    transition: all 0.15s ease-in-out; /* Zmiana wszystkich właściwości z animacją trwającą 0.3 sekundy */
+}
+
 .nav {
     width: 100%;
     display: flex;
