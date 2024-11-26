@@ -22,6 +22,12 @@ if (!isset($_COOKIE['liczba_odwiedzin'])) {
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" crossorigin="" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="style/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Ballet:opsz@16..72&family=Bungee+Spice&family=Nabla&display=swap" rel="stylesheet">
+
 
 
 </head>
@@ -29,7 +35,6 @@ if (!isset($_COOKIE['liczba_odwiedzin'])) {
 <body>
     <nav class="nav">
         <div class="search-column">
-            <!-- <div class="search-bar"> -->
             <div class="search-bar-container">
                 <form action="" method="post" class="search-form">
                     <input type="text" name="search" placeholder="Szukaj..." class="search-input">
@@ -132,16 +137,36 @@ if (!isset($_COOKIE['liczba_odwiedzin'])) {
     //wynik search bara
     if (isset($_POST['search-button'])) {
         session_destroy();
-        $wyszukanie = $_POST['search'];
-        $sql = "SELECT * FROM dania WHERE nazwa_dania LIKE '" . $wyszukanie . "%';";
+        $wyszukanie = trim($_POST['search']);
+     
+        if (!preg_match('/^[a-zA-Z\s]{1,30}$/', $wyszukanie)) {
+            die();
+        }
 
-        $result = $conn->query($sql);
+        $wyszukanie = filter_var($wyszukanie, FILTER_SANITIZE_STRING);
+        $test = $wyszukanie;
+        strtolower($test);
+        $wyszukanie =  '%' .  $wyszukanie . '%'; 
+        
+
+        $stmt = $conn->prepare("SELECT * FROM dania WHERE nazwa_dania LIKE ?;") ;
+        $stmt->bind_param("s", $wyszukanie);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
         echo '<div class="dania-container">';
         $rowNumber = $result->num_rows;
 
         if ($result->num_rows > 0) {
-
             $daniaValues = $result->fetch_all(MYSQLI_ASSOC);
+        } else if ($test == 'ciasto z jajem' || $test == 'bacon cake') {
+            echo '<div class="danie-box">';
+            echo '<img src="images\ciasto-z-jajem.jpg" class="zdjecie-danie">';
+            echo '<div class="danie-dane">';
+            echo "<h1>" . ucfirst($test) . " </h1><br>";
+            echo '<p><a href="https://www.tasteatlas.com/bacon-and-egg-pie" target="_blank" class="link">' . $test .  '</a></p>';
+            echo '</div>';
+            echo '</div>';
         } else {
             echo "Brak wyników.";
         }
