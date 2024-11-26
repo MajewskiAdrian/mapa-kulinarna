@@ -2,8 +2,22 @@
 session_start();
 
 if ($_SERVER['REQUEST_METHOD'] === "POST") {
-    $username = $_POST["username"];
-    $pwd = $_POST["pwd"];
+
+    $errors = [];
+
+    $username = trim($_POST['username']);
+    $username = filter_var($username, FILTER_SANITIZE_STRING);
+    if (!preg_match('/^[a-zA-Z0-9_]{3,20}$/', $username)) {
+        header("Location: ../login.php");
+        die();
+    }
+
+    $pwd = trim($_POST['pwd']);
+    $pwd = filter_var($pwd, FILTER_SANITIZE_STRING);
+    if (!preg_match('/^[a-zA-Z0-9_]{3,20}$/', $pwd)) {
+        header("Location: ../login.php");
+        die();
+    }
 
     try {
         require_once 'db_conn.php';
@@ -35,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
 
         $_SESSION['user'] = 'admin';
         header("location: ../login.php?login=success");
-        
+
         $stmt = null;
         $pdo = null;
 

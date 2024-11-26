@@ -1,10 +1,16 @@
+@font-face {
+    font-family: Potwornyszczur;
+    src: url(../fonts/Montserrat-VariableFont_wght.ttf)
+}
+
 :root {
     font-size: 62.5%;
     --backgrund-color: #0e0e0ee1;
 }
 
 .transition {
-    transition: all 0.15s ease-in-out; /* Zmiana wszystkich właściwości z animacją trwającą 0.3 sekundy */
+    transition: all 0.15s ease-in-out;
+    /* Zmiana wszystkich właściwości z animacją trwającą 0.3 sekundy */
 }
 
 .nav {
@@ -25,37 +31,38 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+    font-family: Potwornyszczur;
 }
 
 .search-bar-container {
     width: 100%;
     display: flex;
-    justify-content: center; 
+    justify-content: center;
     margin: 20px 0;
 }
 
 .search-form {
     display: flex;
     align-items: center;
-    width: 60%; 
+    width: 60%;
     max-width: 600px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    overflow: hidden; 
+    overflow: hidden;
     background: #eceaea;
 }
 
 .search-input {
-    width: 80%; 
+    width: 80%;
     padding: 10px;
     border: none;
-    outline: none; 
+    outline: none;
     font-size: 16px;
 }
 
 .search-button {
-    width: 20%; 
-    background-color: rgba(201, 0, 0, 0); 
+    width: 20%;
+    background-color: rgba(201, 0, 0, 0);
     color: white;
     border: none;
     font-size: 18px;
@@ -114,7 +121,7 @@ body {
     padding: 0;
     background-color: var(--backgrund-color);
     color: #c0c0c0;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: Potwornyszczur;
 }
 
 h1 {
@@ -142,25 +149,49 @@ p {
     padding: 0.9rem;
     border-radius: .65rem;
     box-shadow: 0px 0px 48px -4px #42445a;
-    width: 22rem;
-    height: 10rem;
+    width: 32rem;
+    height: 20rem;
     cursor: pointer;
-    text-align: left;
     transition: all 0.3s ease-in-out;
+    background-size: cover;
+    position: relative;
 }
 
 .restuaracja-box:hover {
-    box-shadow: 0px 0px 68px 4px #6a6c83;
-    /*transform: scale(1.05);*/
+    box-shadow: 0px 0px 48px 2px #6a6c83;   
+}
+
+.restauracja-dane {
+    background: linear-gradient(20deg, rgba(0,0,0,1) 0%, rgba(3,3,13,1) 10%, rgba(0,0,0,0.2553396358543417) 100%);
+    color: white;
+    text-align: left;
+    border-radius: .65rem;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    padding: 10px; 
+}
+
+.restauracja-dane:hover {
+    background: linear-gradient(20deg, rgba(0,0,0,1) 0%, rgba(3,3,13,1) 1%, rgba(0,0,0,0.2553396358543417) 100%);
+}
+
+
+.restauracja-text {
+    font-size: 1.2rem;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    margin-bottom: 1rem;
+    margin-left: 1rem;
 }
 
 .restauracja-nazwa {
     font-size: 1.6rem;
     font-weight: bold;
-}
-
-.restauracja-dane {
-    font-size: 1.2rem;
+    margin-bottom: 1rem;
 }
 
 .panel-wrapper {
@@ -391,9 +422,26 @@ tr:nth-child(even) {
     padding-top: 0;
 }
 
+.danie-dane * {
+    margin-top: 1rem;
+}
+
 .button-restauracja {
     padding: 0;
     margin: 0;
     background-color: #00000000;
     border: none;
+}
+
+.link:link {
+    
+    color: #eee683;
+}
+
+.link:visited {
+    color: #945f43;
+}
+
+.link:hover {
+    color: #bf6905;
 }

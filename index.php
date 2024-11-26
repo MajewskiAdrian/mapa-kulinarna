@@ -22,14 +22,11 @@ if (!isset($_COOKIE['liczba_odwiedzin'])) {
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" crossorigin="" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="style/main.css">
-
-
 </head>
 
 <body>
     <nav class="nav">
         <div class="search-column">
-            <!-- <div class="search-bar"> -->
             <div class="search-bar-container">
                 <form action="" method="post" class="search-form">
                     <input type="text" name="search" placeholder="Szukaj..." class="search-input">
@@ -97,13 +94,13 @@ if (!isset($_COOKIE['liczba_odwiedzin'])) {
                         fillColor: '#000000FF',
                         fillOpacity: 0.35
                     },
-                    onEachFeature: function(feature, layer) {
-                        layer.on('click', function(e) {
+                    onEachFeature: function (feature, layer) {
+                        layer.on('click', function (e) {
                             let countryName = feature.properties.name_pl;
                             window.location.href = `index.php?country=${encodeURIComponent(countryName)}`;
                         });
 
-                        layer.on('mouseover', function() {
+                        layer.on('mouseover', function () {
                             layer.setStyle({
                                 weight: 0.7,
                                 color: '#a1a1a1cc',
@@ -113,7 +110,7 @@ if (!isset($_COOKIE['liczba_odwiedzin'])) {
                             layer._path.classList.add('transition');
                         });
 
-                        layer.on('mouseout', function() {
+                        layer.on('mouseout', function () {
                             layer.setStyle({
                                 weight: 0.75,
                                 color: '#a1a1a1cc',
@@ -132,16 +129,36 @@ if (!isset($_COOKIE['liczba_odwiedzin'])) {
     //wynik search bara
     if (isset($_POST['search-button'])) {
         session_destroy();
-        $wyszukanie = $_POST['search'];
-        $sql = "SELECT * FROM dania WHERE nazwa_dania LIKE '" . $wyszukanie . "%';";
+        $wyszukanie = trim($_POST['search']);
 
-        $result = $conn->query($sql);
+        if (!preg_match('/^[a-zA-Z\s]{1,30}$/', $wyszukanie)) {
+            die();
+        }
+
+        $wyszukanie = filter_var($wyszukanie, FILTER_SANITIZE_STRING);
+        $test = $wyszukanie;
+        strtolower($test);
+        $wyszukanie = '%' . $wyszukanie . '%';
+
+
+        $stmt = $conn->prepare("SELECT * FROM dania WHERE nazwa_dania LIKE ?;");
+        $stmt->bind_param("s", $wyszukanie);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
         echo '<div class="dania-container">';
         $rowNumber = $result->num_rows;
 
         if ($result->num_rows > 0) {
-
             $daniaValues = $result->fetch_all(MYSQLI_ASSOC);
+        } else if ($test == 'ciasto z jajem' || $test == 'bacon cake') {
+            echo '<div class="danie-box">';
+            echo '<img src="images\ciasto-z-jajem.jpg" class="zdjecie-danie">';
+            echo '<div class="danie-dane">';
+            echo "<h1>" . ucfirst($test) . " </h1><br>";
+            echo '<p><a href="https://www.tasteatlas.com/bacon-and-egg-pie" target="_blank" class="link">' . $test . '</a></p>';
+            echo '</div>';
+            echo '</div>';
         } else {
             echo "Brak wyników.";
         }
@@ -166,11 +183,13 @@ if (!isset($_COOKIE['liczba_odwiedzin'])) {
             echo '<div class="danie-dane">';
             echo "<h1>" . $daniaValues[$i]['nazwa_dania'] . " </h1>";
             echo "<p>" . $daniaValues[$i]['opis'] . " </p>";
+            echo '<hr>';
             if ($daniaValues[$i]['wegetarianskie']) {
                 echo "<p>Czy jest wegetariańskie?: Tak</p>";
             } else
                 echo "<p>Czy jest wegetariańskie?: Nie</p>";
-            echo "<p>Kuchnia: " . $daniaValues[$i]['kuchnia'] . " </p>";
+                
+            echo "<p>Kuchnia: " . $daniaValues[$i]['kuchnia'] . "</p>";
 
             // wyciąganie nazwy restauracji
             $sql = "SELECT id_restauracji FROM restauracje_dania WHERE id_dania = '" . $daniaValues[$i]['id'] . "';";
@@ -196,7 +215,7 @@ if (!isset($_COOKIE['liczba_odwiedzin'])) {
                 echo "brak danych";
             }
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+    
             $sql = "SELECT * FROM dania_skladniki WHERE id_dania = '" . $daniaValues[$i]['id'] . "';";
 
             $result = $conn->query($sql);
@@ -249,14 +268,30 @@ if (!isset($_COOKIE['liczba_odwiedzin'])) {
 
                     while ($row = $result->fetch_assoc()) {
                         $idRestauracji = $row["id"];
+
+                        // wyciaganie sciezki zdjecia
+                        $sql = "SELECT zdjecie FROM dania_zdjecia WHERE id_dania=" . $idRestauracji . ";";
+                        $resultt = $conn->query($sql);
+
+                        if ($resultt->num_rows > 0) {
+                            while ($roww = $resultt->fetch_assoc()) {
+                                $sciezkaZdjecia = $roww["zdjecie"];
+                            }
+                        } else {
+                            echo "brak danych";
+                        }
+                        
                         echo '<form action="" method="POST">';
                         echo '<button type="submit" class="button-restauracja" name="restauracja-button" value="' . $idRestauracji . '">';
-                        echo '<div class="restuaracja-box">';
-                        echo "<p class='restauracja-nazwa'>" . $row["nazwa_restauracji"] . "</p>";
-                        echo '<span class="restauracja-dane">';
+                        echo '<div class="restuaracja-box" style="background-image: url(\'' . $sciezkaZdjecia . '\')">';
+                        //echo '<img src="' . $sciezkaZdjecia . '" class="zdjecie-danie">';
+                        echo '<div class="restauracja-dane">';
+                        echo '<span class="restauracja-text">';
+                        echo "<h1 class='restauracja-nazwa'>".$row["nazwa_restauracji"]."</h1>";
                         echo "Państwo: " . $row["panstwo"] . "<br>";
                         echo "Adres: " . $row["ulica"] . ', ' . $row["miasto"] . "";
                         echo '</span>';
+                        echo '</div>';
                         echo '</div>';
                         echo '</button>';
                         echo '</form>';
@@ -333,6 +368,7 @@ if (!isset($_COOKIE['liczba_odwiedzin'])) {
                     echo '<div class="danie-dane">';
                     echo "<h1>" . $daniaValues[$i]['nazwa_dania'] . " </h1>";
                     echo "<p>" . $daniaValues[$i]['opis'] . " </p>";
+                    echo '<hr>';
                     if ($daniaValues[$i]['wegetarianskie']) {
                         echo "<p>Czy jest wegetariańskie?: Tak</p>";
                     } else
@@ -363,7 +399,7 @@ if (!isset($_COOKIE['liczba_odwiedzin'])) {
                         echo "brak danych";
                     }
                     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+    
                     $sql = "SELECT * FROM dania_skladniki WHERE id_dania = '" . $daniaValues[$i]['id'] . "';";
 
                     $result = $conn->query($sql);
@@ -439,7 +475,7 @@ if (!isset($_COOKIE['liczba_odwiedzin'])) {
                 }
 
                 //print_r($daniaValues);
-
+    
 
                 for ($i = 0; $i < $rowNumber; $i++) {
 
@@ -460,6 +496,7 @@ if (!isset($_COOKIE['liczba_odwiedzin'])) {
                     echo '<div class="danie-dane">';
                     echo "<h1>" . $daniaValues[$i]['nazwa_dania'] . " </h1>";
                     echo "<p>" . $daniaValues[$i]['opis'] . " </p>";
+                    echo '<hr>';
                     if ($daniaValues[$i]['wegetarianskie']) {
                         echo "<p>Czy jest wegetariańskie?: Tak</p>";
                     } else
@@ -478,7 +515,7 @@ if (!isset($_COOKIE['liczba_odwiedzin'])) {
                         echo "brak danych";
                     }
                     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+    
                     $sql = "SELECT * FROM dania_skladniki WHERE id_dania = '" . $daniaValues[$i]['id'] . "';";
 
                     $result = $conn->query($sql);
