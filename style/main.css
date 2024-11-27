@@ -9,8 +9,7 @@
 }
 
 .transition {
-    transition: all 0.15s ease-in-out;
-    /* Zmiana wszystkich właściwości z animacją trwającą 0.3 sekundy */
+    transition: all 0.25s ease-in-out;
 }
 
 .nav {
@@ -82,7 +81,7 @@
     margin-left: auto;
     margin-right: auto;
     border: none;
-    width: 7.5rem;
+    width: 8rem;
     height: 3rem;
     border-radius: 0.5rem;
     transition: all 0.2s ease-in-out;

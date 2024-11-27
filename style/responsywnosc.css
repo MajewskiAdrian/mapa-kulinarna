@@ -1,0 +1,244 @@
+@media (max-width: 768px) and (orientation: portrait) {
+
+    /* Stylizacja dla urządzeń mobilnych - pionowa */
+
+    body {
+        font-size: 1.2rem;
+    }
+
+    .nav {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    #map {
+        height: 40rem;
+        order: 1;
+        width: 95%;
+        margin-top: 0.65rem;
+    }
+
+    .search-column {
+        order: 2;
+        flex-direction: row;
+        width: 80%;
+        align-items: center;
+        gap: 2rem;
+    }
+
+    .search-bar-container {
+        margin-top: 2rem;
+        margin-left: 0;
+        margin-right: 0;
+        width: 70%;
+    }
+
+    .search-form {
+        margin-left: 0rem;
+        margin-right: 0rem;
+        width: fit-content;
+    }
+
+    .button-wybor-dania,
+    .button-wybor-restauracje {
+        width: 8em;
+        height: 3em;
+    }
+
+    .dania-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .danie-box {
+        width: 90%;
+    }
+}
+
+@media (max-width: 930px) and (orientation: landscape) {
+
+    /* Stylizacja dla urządzeń mobilnych - pozioma */
+
+    body {
+        font-size: 1.2rem;
+    }
+
+    .nav {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    #map {
+        height: 40rem;
+        order: 1;
+        width: 95%;
+        margin-top: 0.65rem;
+    }
+
+    .search-column {
+        order: 2;
+        flex-direction: row;
+        width: 80%;
+        align-items: center;
+        gap: 2rem;
+    }
+
+    .search-bar-container {
+        margin-top: 2rem;
+        margin-left: 0;
+        margin-right: 0;
+        width: 70%;
+    }
+
+    .search-form {
+        margin-left: 0rem;
+        margin-right: 0rem;
+        width: fit-content;
+    }
+
+
+    .button-wybor-dania,
+    .button-wybor-restauracje {
+        width: 8em;
+        height: 3em;
+    }
+
+    .dania-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .danie-box {
+        width: 90%;
+    }
+}
+
+@media (min-width: 931px) and (max-width: 1200px) and (orientation: landscape) {
+
+    /* Stylizacja dla tabletów - pozioma */
+    body {
+        font-size: 1.2rem;
+    }
+
+    .nav {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    #map {
+        height: 40rem;
+        order: 1;
+        width: 95%;
+        margin-top: 0.65rem;
+    }
+
+    .search-column {
+        order: 2;
+        flex-direction: row;
+        width: 80%;
+        align-items: center;
+        gap: 2rem;
+    }
+
+    .search-bar-container {
+        margin-top: 2rem;
+        margin-left: 0;
+        margin-right: 0;
+        width: 70%;
+    }
+
+    .search-form {
+        margin-left: 0rem;
+        margin-right: 0rem;
+        width: fit-content;
+    }
+
+    .button-wybor-dania,
+    .button-wybor-restauracje {
+        width: 8em;
+        height: 3em;
+    }
+
+    .restauracje-container {
+        flex-direction: row;
+        width: 100%;
+        gap: 1rem;
+    }
+
+    .restauracja-box {
+        width: 0rem;
+    }
+
+    .dania-container {
+        flex-direction: row;
+    }
+
+    .danie-box {
+        width: 46%;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1200px) and (orientation: portrait) {
+
+    /* Stylizacja dla tabletów - pionowa */
+    body {
+        font-size: 1.2rem;
+    }
+
+    .nav {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    #map {
+        height: 40rem;
+        order: 1;
+        width: 95%;
+        margin-top: 0.65rem;
+    }
+
+    .search-column {
+        order: 2;
+        flex-direction: row;
+        width: 90%;
+        align-items: center;
+        gap: 2rem;
+    }
+
+    .search-bar-container {
+        margin-top: 2rem;
+        margin-left: 0;
+        margin-right: 0;
+        width: 70%;
+    }
+
+    .search-form {
+        margin-left: 0rem;
+        margin-right: 0rem;
+        width: fit-content;
+    }
+
+    .button-wybor-dania,
+    .button-wybor-restauracje {
+        width: 8em;
+        height: 3em;
+    }
+
+    .restauracje-container {
+        flex-direction: row;
+        width: 90%
+    }
+
+    .restauracja-box {
+        width: 28rem;
+    }
+
+    .dania-container {
+        flex-direction: column;
+        align-content: center;
+    }
+
+    .danie-box {
+        width: 90%;
+    }
+}

@@ -22,6 +22,7 @@ if (!isset($_COOKIE['liczba_odwiedzin'])) {
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" crossorigin="" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="style/main.css">
+    <link rel="stylesheet" href="style/responsywnosc.css">
 </head>
 
 <body>
