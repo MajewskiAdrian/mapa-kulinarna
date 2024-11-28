@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Lis 25, 2024 at 03:24 PM
+-- Generation Time: Lis 28, 2024 at 02:25 PM
 -- Wersja serwera: 10.4.32-MariaDB
 -- Wersja PHP: 8.2.12
 
@@ -485,6 +485,29 @@ INSERT INTO `restauracje_dania` (`id_restauracji`, `id_dania`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Struktura tabeli dla tabeli `restauracje_zdjecia`
+--
+
+CREATE TABLE `restauracje_zdjecia` (
+  `id_restauracji` int(11) NOT NULL,
+  `zdjecie` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `restauracje_zdjecia`
+--
+
+INSERT INTO `restauracje_zdjecia` (`id_restauracji`, `zdjecie`) VALUES
+(1, ' images/Polska/senses.jpg'),
+(2, ' images/Polska/amaro.jpg'),
+(3, ' images/Polska/pod_aniolami.jpg'),
+(4, ' images/wlochy/osteria_francescana.jpg'),
+(5, ' images/wlochy/la_pergola.jpg'),
+(6, ' images/wlochy/piazza_duomo.png');
+
+-- --------------------------------------------------------
+
+--
 -- Zastąpiona struktura widoku `restauracje_z_daniami_z_pomidorem`
 -- (See below for the actual view)
 --
@@ -660,7 +683,6 @@ WHERE
 ORDER BY 
     `temp`.`id` ASC;
 
-
 -- --------------------------------------------------------
 
 --
@@ -722,6 +744,12 @@ ALTER TABLE `restauracje_dania`
   ADD KEY `id_dania` (`id_dania`);
 
 --
+-- Indeksy dla tabeli `restauracje_zdjecia`
+--
+ALTER TABLE `restauracje_zdjecia`
+  ADD PRIMARY KEY (`id_restauracji`,`zdjecie`);
+
+--
 -- Indeksy dla tabeli `skladniki`
 --
 ALTER TABLE `skladniki`
@@ -778,6 +806,12 @@ ALTER TABLE `dania_zdjecia`
 ALTER TABLE `restauracje_dania`
   ADD CONSTRAINT `restauracje_dania_ibfk_1` FOREIGN KEY (`id_restauracji`) REFERENCES `restauracje` (`id`),
   ADD CONSTRAINT `restauracje_dania_ibfk_2` FOREIGN KEY (`id_dania`) REFERENCES `dania` (`id`);
+
+--
+-- Constraints for table `restauracje_zdjecia`
+--
+ALTER TABLE `restauracje_zdjecia`
+  ADD CONSTRAINT `restauracje_zdjecia_ibfk_1` FOREIGN KEY (`id_restauracji`) REFERENCES `restauracje` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

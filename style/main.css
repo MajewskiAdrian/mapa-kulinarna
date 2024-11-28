@@ -5,12 +5,11 @@
 
 :root {
     font-size: 62.5%;
-    --backgrund-color: #0e0e0ee1;
+    --backgrund-color: #000000e1;
 }
 
 .transition {
-    transition: all 0.15s ease-in-out;
-    /* Zmiana wszystkich właściwości z animacją trwającą 0.3 sekundy */
+    transition: all 0.25s ease-in-out;
 }
 
 .nav {
@@ -50,6 +49,7 @@
     border-radius: 5px;
     overflow: hidden;
     background: #eceaea;
+    margin-top: 1rem;
 }
 
 .search-input {
@@ -77,33 +77,46 @@
     transform: scale(1.06);
 }
 
-.button-wybor-dania,
-.button-wybor-restauracje {
+.form-button-wybor {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    align-content: center;
+    text-align: center;
+}
+
+.form-button-wybor p {
+    font-size: 1.6rem;
+    margin-bottom: 0.4rem;
+}
+
+.button-wybor-dan,
+.button-wybor-restauracji {
     margin-left: auto;
     margin-right: auto;
     border: none;
-    width: 7.5rem;
-    height: 3rem;
+    width: 8rem;
+    height: 4rem;
     border-radius: 0.5rem;
     transition: all 0.2s ease-in-out;
 }
 
-.button-wybor-dania {
+.button-wybor-dan {
     background: #eceaea;
     color: #303030;
 }
 
-.button-wybor-dania:hover {
+.button-wybor-dan:hover {
     box-shadow: 0px 0px 68px 4px #6a6c83;
     transform: scale(1.03);
 }
 
-.button-wybor-restauracje {
+.button-wybor-restauracji {
     background: #eceaea;
     color: #303030;
 }
 
-.button-wybor-restauracje:hover {
+.button-wybor-restauracji:hover {
     box-shadow: 0px 0px 68px 4px #696969;
     transform: scale(1.03);
 }
@@ -158,11 +171,11 @@ p {
 }
 
 .restuaracja-box:hover {
-    box-shadow: 0px 0px 48px 2px #6a6c83;   
+    box-shadow: 0px 0px 48px 2px #6a6c83;
 }
 
 .restauracja-dane {
-    background: linear-gradient(20deg, rgba(0,0,0,1) 0%, rgba(3,3,13,1) 10%, rgba(0,0,0,0.2553396358543417) 100%);
+    background: linear-gradient(20deg, rgba(0, 0, 0, 1) 0%, rgba(3, 3, 13, 1) 10%, rgba(0, 0, 0, 0.2553396358543417) 100%);
     color: white;
     text-align: left;
     border-radius: .65rem;
@@ -171,11 +184,11 @@ p {
     position: absolute;
     bottom: 0;
     left: 0;
-    padding: 10px; 
+    padding: 10px;
 }
 
 .restauracja-dane:hover {
-    background: linear-gradient(20deg, rgba(0,0,0,1) 0%, rgba(3,3,13,1) 1%, rgba(0,0,0,0.2553396358543417) 100%);
+    background: linear-gradient(20deg, rgba(0, 0, 0, 1) 0%, rgba(3, 3, 13, 1) 1%, rgba(0, 0, 0, 0.2553396358543417) 100%);
 }
 
 
@@ -385,6 +398,7 @@ tr:nth-child(even) {
 }
 
 .dania-container {
+    margin-top: 2rem;
     font-size: 50px;
     display: flex;
     flex-direction: row;
@@ -399,14 +413,39 @@ tr:nth-child(even) {
     width: 28%;
     border-radius: 1.55rem;
     padding-top: 0;
+    box-shadow: 0px 0px 30px -14px #505050;
+    background: #272727;
+    background: radial-gradient(circle, rgba(25,25,25,0) 0%, rgba(25,25,25,0.24831939611782217) 35%, rgba(20,20,20,0.5648460067620799) 88%); 
+}
+
+.zdjecie-danie-effect {
+    z-index: 100;
+    width: 100%;
+    height: 30rem;
+    position: relative;
 }
 
 .zdjecie-danie {
     margin: 0;
     width: 100%;
-    height: auto;
+    height: 100%;
+    object-fit: cover;
     border-top-right-radius: 1.55rem;
     border-top-left-radius: 1.55rem;
+}
+
+.zdjecie-danie-effect::after {
+    border-top-right-radius: 1.55rem;
+    border-top-left-radius: 1.55rem;
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgb(0, 0, 0);
+    background: radial-gradient(circle, rgba(0, 0, 0, 0.09145665101978295) 0%, rgba(0, 0, 0, 0.2007003484987745) 35%, rgba(0, 0, 0, 0.6516807406556373) 100%);
+    pointer-events: none;
 }
 
 .danie-dane {
@@ -434,7 +473,7 @@ tr:nth-child(even) {
 }
 
 .link:link {
-    
+
     color: #eee683;
 }
 
