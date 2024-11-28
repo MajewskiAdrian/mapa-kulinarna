@@ -41,7 +41,7 @@ if (!isset($_COOKIE['liczba_odwiedzin'])) {
 
 
             if (!isset($_SESSION['wybor'])) {
-                $_SESSION['wybor'] = "restauracje";
+                $_SESSION['wybor'] = "restauracji";
                 $_SESSION['wybor_css'] = "restauracji";
             }
             if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['wybor'])) {
@@ -161,7 +161,9 @@ if (!isset($_COOKIE['liczba_odwiedzin'])) {
             $daniaValues = $result->fetch_all(MYSQLI_ASSOC);
         } else if ($test == 'ciasto z jajem' || $test == 'bacon cake') {
             echo '<div class="danie-box">';
+            echo '<div class="zdjecie-danie-effect">';
             echo '<img src="images\ciasto-z-jajem.jpg" class="zdjecie-danie">';
+            echo '</div>';
             echo '<div class="danie-dane">';
             echo "<h1>" . ucfirst($test) . " </h1><br>";
             echo '<p><a href="https://www.tasteatlas.com/bacon-and-egg-pie" target="_blank" class="link">' . $test . '</a></p>';
