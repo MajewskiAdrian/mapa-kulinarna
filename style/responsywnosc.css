@@ -39,13 +39,13 @@
         width: fit-content;
     }
 
-    .button-wybor-dania,
-    .button-wybor-restauracje {
+    .button-wybor-dan,
+    .button-wybor-restauracji {
         width: 8em;
         height: 3em;
     }
 
-    .dania-container {
+    .dan-container {
         flex-direction: column;
         align-items: center;
     }
@@ -97,13 +97,13 @@
     }
 
 
-    .button-wybor-dania,
-    .button-wybor-restauracje {
+    .button-wybor-dan,
+    .button-wybor-restauracji {
         width: 8em;
         height: 3em;
     }
 
-    .dania-container {
+    .dan-container {
         flex-direction: column;
         align-items: center;
     }
@@ -153,13 +153,13 @@
         width: fit-content;
     }
 
-    .button-wybor-dania,
-    .button-wybor-restauracje {
+    .button-wybor-dan,
+    .button-wybor-restauracji {
         width: 8em;
         height: 3em;
     }
 
-    .restauracje-container {
+    .restauracji-container {
         flex-direction: row;
         width: 100%;
         gap: 1rem;
@@ -169,7 +169,7 @@
         width: 0rem;
     }
 
-    .dania-container {
+    .dan-container {
         flex-direction: row;
     }
 
@@ -218,13 +218,13 @@
         width: fit-content;
     }
 
-    .button-wybor-dania,
-    .button-wybor-restauracje {
+    .button-wybor-dan,
+    .button-wybor-restauracji {
         width: 8em;
         height: 3em;
     }
 
-    .restauracje-container {
+    .restauracji-container {
         flex-direction: row;
         width: 90%
     }
@@ -233,7 +233,7 @@
         width: 28rem;
     }
 
-    .dania-container {
+    .dan-container {
         flex-direction: column;
         align-content: center;
     }

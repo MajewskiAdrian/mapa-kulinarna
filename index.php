@@ -21,6 +21,7 @@ if (!isset($_COOKIE['liczba_odwiedzin'])) {
     <title>Mapa kulinarna</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" crossorigin="" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="icon" type="image/x-icon" href="icons\favicon.ico">
     <link rel="stylesheet" href="style/main.css">
     <link rel="stylesheet" href="style/responsywnosc.css">
 </head>
@@ -30,7 +31,7 @@ if (!isset($_COOKIE['liczba_odwiedzin'])) {
         <div class="search-column">
             <div class="search-bar-container">
                 <form action="" method="post" class="search-form">
-                    <input type="text" name="search" placeholder="Szukaj..." class="search-input">
+                    <input type="text" name="search" placeholder="Szukaj dań..." class="search-input">
                     <button type="submit" name="search-button" class="search-button">🔍</button>
                 </form>
             </div>
@@ -41,23 +42,29 @@ if (!isset($_COOKIE['liczba_odwiedzin'])) {
 
             if (!isset($_SESSION['wybor'])) {
                 $_SESSION['wybor'] = "restauracje";
+                $_SESSION['wybor_css'] = "restauracji";
             }
             if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['wybor'])) {
-                if ($_POST['wybor'] === "restauracje") {
-                    $_SESSION['wybor'] = "dania";
-                    $_SESSION['restauracje'] = true;
-                } else {
-                    $_SESSION['wybor'] = "restauracje";
+                if ($_POST['wybor'] === "restauracji") {
+                    $_SESSION['wybor'] = "dań";
+                    $_SESSION['wybor_css'] = "dan";
                     $_SESSION['restauracje'] = false;
+                } else {
+                    $_SESSION['wybor'] = "restauracji";
+                    $_SESSION['wybor_css'] = "restauracji";
+                    $_SESSION['restauracje'] = true;
                 }
 
                 header("Location: " . $_SERVER['PHP_SELF']);
                 exit();
             }
+            $wybor_css = $_SESSION['wybor_css'];
             $wybor = $_SESSION['wybor'];
 
-            echo '<form action="" method="post">';
-            echo '<button type="submit" class="button-wybor-' . $wybor . '" name="wybor" value="' . $wybor . '">' . $wybor . '</button>';
+            
+            echo '<form action="" method="post" class="form-button-wybor">';
+            echo '<p>Wyświetlanie: </p>';
+            echo '<button type="submit" class="button-wybor-' . $wybor_css . '" name="wybor" value="' . $wybor . '">' . $wybor . '</button>';
             echo '</form>';
 
             ?>
@@ -180,17 +187,13 @@ if (!isset($_COOKIE['liczba_odwiedzin'])) {
             }
 
             echo '<div class="danie-box">';
+            echo '<div class="zdjecie-danie-effect">';
             echo '<img src="' . $sciezkaZdjecia . '" class="zdjecie-danie">';
+            echo '</div>';
             echo '<div class="danie-dane">';
             echo "<h1>" . $daniaValues[$i]['nazwa_dania'] . " </h1>";
             echo "<p>" . $daniaValues[$i]['opis'] . " </p>";
             echo '<hr>';
-            if ($daniaValues[$i]['wegetarianskie']) {
-                echo "<p>Czy jest wegetariańskie?: Tak</p>";
-            } else
-                echo "<p>Czy jest wegetariańskie?: Nie</p>";
-                
-            echo "<p>Kuchnia: " . $daniaValues[$i]['kuchnia'] . "</p>";
 
             // wyciąganie nazwy restauracji
             $sql = "SELECT id_restauracji FROM restauracje_dania WHERE id_dania = '" . $daniaValues[$i]['id'] . "';";
@@ -215,6 +218,19 @@ if (!isset($_COOKIE['liczba_odwiedzin'])) {
             } else {
                 echo "brak danych";
             }
+
+            if (strtolower($daniaValues[$i]['kuchnia']) == "polska") {
+                $flaga = "🇵🇱";
+            } else if ((strtolower($daniaValues[$i]['kuchnia']) == "włoska")) {
+                $flaga = "🇮🇹";
+            }
+
+            echo "<p>Kuchnia: " . $flaga . " " . $daniaValues[$i]['kuchnia'] . " </p>";
+
+            if ($daniaValues[$i]['wegetarianskie']) {
+                echo "<p>Czy jest wegetariańskie?: ✔️</p>";
+            } else
+                echo "<p>Czy jest wegetariańskie?: ✖️</p>";
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
             $sql = "SELECT * FROM dania_skladniki WHERE id_dania = '" . $daniaValues[$i]['id'] . "';";
@@ -242,7 +258,7 @@ if (!isset($_COOKIE['liczba_odwiedzin'])) {
                 }
 
                 $skladiki = implode(", ", $sklad_nazwy);
-                echo "$skladiki</p>";
+                echo "$skladiki" . '.' . "</p>";
                 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 echo "</div>";
                 echo "</div>";
@@ -253,7 +269,6 @@ if (!isset($_COOKIE['liczba_odwiedzin'])) {
 
         if (isset($_GET['country'])) {
             $panstwo = $_GET['country'];
-            echo "Państwo: " . htmlspecialchars($panstwo);
             $_SESSION['panstwo'] = $panstwo;
         }
         if (isset($_SESSION["panstwo"])) {
@@ -271,7 +286,7 @@ if (!isset($_COOKIE['liczba_odwiedzin'])) {
                         $idRestauracji = $row["id"];
 
                         // wyciaganie sciezki zdjecia
-                        $sql = "SELECT zdjecie FROM dania_zdjecia WHERE id_dania=" . $idRestauracji . ";";
+                        $sql = "SELECT zdjecie FROM restauracje_zdjecia WHERE id_restauracji=" . $idRestauracji . ";";
                         $resultt = $conn->query($sql);
 
                         if ($resultt->num_rows > 0) {
@@ -281,11 +296,10 @@ if (!isset($_COOKIE['liczba_odwiedzin'])) {
                         } else {
                             echo "brak danych";
                         }
-                        
+
                         echo '<form action="" method="POST">';
                         echo '<button type="submit" class="button-restauracja" name="restauracja-button" value="' . $idRestauracji . '">';
                         echo '<div class="restuaracja-box" style="background-image: url(\'' . $sciezkaZdjecia . '\')">';
-                        //echo '<img src="' . $sciezkaZdjecia . '" class="zdjecie-danie">';
                         echo '<div class="restauracja-dane">';
                         echo '<span class="restauracja-text">';
                         echo "<h1 class='restauracja-nazwa'>".$row["nazwa_restauracji"]."</h1>";
@@ -363,18 +377,16 @@ if (!isset($_COOKIE['liczba_odwiedzin'])) {
                     } else {
                         echo "brak danych";
                     }
-
+                    
                     echo '<div class="danie-box">';
+                    echo '<div class="zdjecie-danie-effect">';
                     echo '<img src="' . $sciezkaZdjecia . '" class="zdjecie-danie">';
+                    echo '</div>';
                     echo '<div class="danie-dane">';
                     echo "<h1>" . $daniaValues[$i]['nazwa_dania'] . " </h1>";
                     echo "<p>" . $daniaValues[$i]['opis'] . " </p>";
                     echo '<hr>';
-                    if ($daniaValues[$i]['wegetarianskie']) {
-                        echo "<p>Czy jest wegetariańskie?: Tak</p>";
-                    } else
-                        echo "<p>Czy jest wegetariańskie?: Nie</p>";
-                    echo "<p>Kuchnia: " . $daniaValues[$i]['kuchnia'] . " </p>";
+                    
 
                     // wyciąganie nazwy restauracji
                     $sql = "SELECT id_restauracji FROM restauracje_dania WHERE id_dania = '" . $daniaValues[$i]['id'] . "';";
@@ -399,8 +411,22 @@ if (!isset($_COOKIE['liczba_odwiedzin'])) {
                     } else {
                         echo "brak danych";
                     }
+
+                    if (strtolower($daniaValues[$i]['kuchnia']) == "polska") {
+                        $flaga = "🇵🇱";
+                    } else if ((strtolower($daniaValues[$i]['kuchnia']) == "włoska")) {
+                        $flaga = "🇮🇹";
+                    }
+
+                    echo "<p>Kuchnia: " . $flaga . " " . $daniaValues[$i]['kuchnia'] . " </p>";
+
+                    if ($daniaValues[$i]['wegetarianskie']) {
+                        echo "<p>Czy jest wegetariańskie?: ✔️</p>";
+                    } else
+                        echo "<p>Czy jest wegetariańskie?: ✖️</p>";
+                        
                     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    
+                    
                     $sql = "SELECT * FROM dania_skladniki WHERE id_dania = '" . $daniaValues[$i]['id'] . "';";
 
                     $result = $conn->query($sql);
@@ -426,7 +452,7 @@ if (!isset($_COOKIE['liczba_odwiedzin'])) {
                         }
 
                         $skladiki = implode(", ", $sklad_nazwy);
-                        echo "$skladiki</p>";
+                        echo "$skladiki" . '.' . "</p>";
                         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                         echo "</div>";
                         echo "</div>";
@@ -473,10 +499,7 @@ if (!isset($_COOKIE['liczba_odwiedzin'])) {
                     $daniaValues = $result->fetch_all(MYSQLI_ASSOC);
                 } else {
                     echo "Brak wartości.";
-                }
-
-                //print_r($daniaValues);
-    
+                }    
 
                 for ($i = 0; $i < $rowNumber; $i++) {
 
@@ -493,16 +516,13 @@ if (!isset($_COOKIE['liczba_odwiedzin'])) {
                     }
 
                     echo '<div class="danie-box">';
+                    echo '<div class="zdjecie-danie-effect">';
                     echo '<img src="' . $sciezkaZdjecia . '" class="zdjecie-danie">';
+                    echo '</div>';
                     echo '<div class="danie-dane">';
                     echo "<h1>" . $daniaValues[$i]['nazwa_dania'] . " </h1>";
                     echo "<p>" . $daniaValues[$i]['opis'] . " </p>";
                     echo '<hr>';
-                    if ($daniaValues[$i]['wegetarianskie']) {
-                        echo "<p>Czy jest wegetariańskie?: Tak</p>";
-                    } else
-                        echo "<p>Czy jest wegetariańskie?: Nie</p>";
-                    echo "<p>Kuchnia: " . $daniaValues[$i]['kuchnia'] . " </p>";
 
                     $sql = "SELECT nazwa_restauracji FROM restauracje WHERE id = '" . $idRestauracji . "';";
                     $result = $conn->query($sql);
@@ -515,7 +535,19 @@ if (!isset($_COOKIE['liczba_odwiedzin'])) {
                     } else {
                         echo "brak danych";
                     }
-                    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+                    if (strtolower($daniaValues[$i]['kuchnia']) == "polska") {
+                        $flaga = "🇵🇱";
+                    } else if ((strtolower($daniaValues[$i]['kuchnia']) == "włoska")) {
+                        $flaga = "🇮🇹";
+                    }
+
+                    echo "<p>Kuchnia: " . $flaga . " " . $daniaValues[$i]['kuchnia'] . " </p>";
+
+                    if ($daniaValues[$i]['wegetarianskie']) {
+                        echo "<p>Czy jest wegetariańskie?: ✔️</p>";
+                    } else
+                        echo "<p>Czy jest wegetariańskie?: ✖️</p>";
     
                     $sql = "SELECT * FROM dania_skladniki WHERE id_dania = '" . $daniaValues[$i]['id'] . "';";
 
@@ -542,7 +574,7 @@ if (!isset($_COOKIE['liczba_odwiedzin'])) {
                         }
 
                         $skladiki = implode(", ", $sklad_nazwy);
-                        echo "$skladiki</p>";
+                        echo "$skladiki" . '.' . "</p>";
                         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                         echo "</div>";
                         echo "</div>";
