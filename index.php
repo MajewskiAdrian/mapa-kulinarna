@@ -41,8 +41,8 @@ if (!isset($_COOKIE['liczba_odwiedzin'])) {
 
 
             if (!isset($_SESSION['wybor'])) {
-                $_SESSION['wybor'] = "restauracji";
-                $_SESSION['wybor_css'] = "restauracji";
+                $_SESSION['wybor'] = "dań";
+                $_SESSION['wybor_css'] = "dan";
             }
             if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['wybor'])) {
                 if ($_POST['wybor'] === "restauracji") {
